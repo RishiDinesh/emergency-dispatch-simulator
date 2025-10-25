@@ -3,21 +3,20 @@ using System.Text;
 
 namespace EmergencyDispatchSimulator.Services;
 
-// Define the delegate for the event handler
-public delegate void MessageReceivedHandler(string message);
+// for event handler
+public delegate Task MessageReceivedHandler(string message);
 
-public class ChatWebSocketService : IDisposable
+public class ChatWebSocketService : IAsyncDisposable
 {
     private readonly Uri _webSocketUri;
-    private ClientWebSocket _ws;
-    private CancellationTokenSource _cts;
+    private readonly ClientWebSocket _ws;
+    private readonly CancellationTokenSource _cts;
 
     // Event components can subscribe to for real-time updates
     public event MessageReceivedHandler MessageReceived;
 
     public bool IsConnected => _ws?.State == WebSocketState.Open;
 
-    // Replace with your external WebSocket API URL
     private const string ExternalApiUrl = "ws://localhost:8000/ws"; 
     
     public ChatWebSocketService()
@@ -29,15 +28,16 @@ public class ChatWebSocketService : IDisposable
 
     public async Task ConnectAsync()
     {
-        if (IsConnected) return;
+        if (IsConnected) 
+            return;
 
         try
         {
             // Connect to the external WebSocket API
             await _ws.ConnectAsync(_webSocketUri, CancellationToken.None);
             
-            // Start the receive loop in the background
-            _ = Task.Run(() => ReceiveLoop());
+            // Start receive loop in the background
+            _ = Task.Run(ReceiveLoop);
         }
         catch (WebSocketException ex)
         {
@@ -75,13 +75,11 @@ public class ChatWebSocketService : IDisposable
                 // Decode the message and fire the event
                 var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 MessageReceived?.Invoke(message);
-
-                // If message is incomplete, continue reading until EndOfMessage is true (not implemented here for simplicity)
             }
         }
         catch (OperationCanceledException)
         {
-            // Expected when CancellationTokenSource is cancelled
+            // when CancellationTokenSource is cancelled
         }
         catch (Exception ex)
         {
@@ -92,42 +90,41 @@ public class ChatWebSocketService : IDisposable
 
     public async Task SendAsync(string message)
     {
-        if (IsConnected)
-        {
-            try
-            {
-                var bytes = Encoding.UTF8.GetBytes(message);
-                var segment = new ArraySegment<byte>(bytes);
-                
-                // Send the message to the external API
-                await _ws.SendAsync(
-                    segment, 
-                    WebSocketMessageType.Text, 
-                    endOfMessage: true, 
-                    CancellationToken.None);
-                    
-                // Optionally, update the UI to show the sent message immediately
-                MessageReceived?.Invoke($"[YOU] {message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error sending message: {ex.Message}");
-                MessageReceived?.Invoke($"[SYSTEM] Failed to send message: {ex.Message}");
-            }
-        }
-        else
+        if (!IsConnected)
         {
             MessageReceived?.Invoke("[SYSTEM] Cannot send: Not connected.");
+            return;
+        }
+        
+        try
+        {
+            var bytes = Encoding.UTF8.GetBytes(message);
+            var segment = new ArraySegment<byte>(bytes);
+            
+            // Send the message to the external API
+            await _ws.SendAsync(
+                segment, 
+                WebSocketMessageType.Text, 
+                endOfMessage: true, 
+                CancellationToken.None);
+                
+            // update the UI to show the sent message immediately
+            // MessageReceived?.Invoke($"[YOU] {message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending message: {ex.Message}");
+            MessageReceived?.Invoke($"[SYSTEM] Failed to send message: {ex.Message}");
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _cts.Cancel();
-        if (_ws?.State == WebSocketState.Open || _ws?.State == WebSocketState.Connecting)
+        await _cts.CancelAsync();
+        if (_ws?.State is WebSocketState.Open or WebSocketState.Connecting)
         {
-             // Close the connection gracefully (non-blocking)
-            _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client closing", CancellationToken.None).Wait();
+             // close gracefully (non-blocking)
+            await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client closing", CancellationToken.None);
         }
         _ws?.Dispose();
         _cts?.Dispose();
