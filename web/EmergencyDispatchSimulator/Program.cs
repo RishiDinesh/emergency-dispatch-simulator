@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using EmergencyDispatchSimulator.Api;
 using EmergencyDispatchSimulator.Components;
+using EmergencyDispatchSimulator.Services;
 using MudBlazor;
 using MudBlazor.Services;
 
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddControllers();
 
 // Add MudBlazor
 builder.Services.AddMudServices();
@@ -21,6 +24,9 @@ builder.Services.AddBlazoredLocalStorage();
 
 // Add Emergency Dispatch Service API
 builder.Services.AddScoped<IEdsApi, EdsApi>();
+
+// Add web socket service as singleton
+builder.Services.AddSingleton<ChatWebSocketService>();
 
 var app = builder.Build();
 

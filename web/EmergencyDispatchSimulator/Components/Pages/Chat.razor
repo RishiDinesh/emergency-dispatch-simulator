@@ -1,7 +1,10 @@
 @page "/chat"
 
+@implements IDisposable
+
 @inject Api.IEdsApi EdsApi
 @inject IDialogService DialogService
+
 
 <div class="mud-full-width d-flex flex-column align-center justify-space-between" style="height: 85vh">
     @if (_loading)
@@ -49,6 +52,12 @@
 
     private bool _isUserSpeaking;
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: initialize web socket
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!_chatInitialized)
@@ -61,12 +70,19 @@
     }
 
 
+    private void HandleNewMessage(string message)
+    {
+        
+    }
+
+
     private async Task UserSpeakingChanged(bool isUserSpeaking)
     {
         if (_isUserSpeaking == isUserSpeaking)
             return;
 
         _isUserSpeaking = isUserSpeaking;
+        
         await InvokeAsync(StateHasChanged);
     }
 
@@ -85,4 +101,8 @@
     }
 
 
+    public void Dispose()
+    {
+        // ChatWebSocket.MessageReceived -= HandleNewMessage;
+    }
 }
