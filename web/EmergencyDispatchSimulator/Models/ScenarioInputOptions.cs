@@ -72,7 +72,7 @@ public static class ScenarioInputOptions
                 Name = Emotion, 
                 Label = "Emotion",
                 Description = "The emotional state of the person reporting the emergency",
-                Options = ["anger", "crying", "fear"]
+                Options = ["anger", "sad", "fear", "neutral"]
             }
         ];
 
