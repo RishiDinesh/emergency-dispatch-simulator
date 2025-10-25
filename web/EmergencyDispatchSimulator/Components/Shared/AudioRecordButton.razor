@@ -1,0 +1,117 @@
+@implements IAsyncDisposable
+
+@inject IJSRuntime JS
+
+
+<MudTooltip Disabled="Recording" Text="Push to begin speaking" Placement="Placement.Top" Arrow>
+    <MudBadge Visible="Recording" Color="Color.Error" Overlap Bordered>
+        <MudToggleIconButton
+            Toggled="Recording" 
+            ToggledChanged="OnRecordingChange"
+            Class="pa-4" 
+            Icon="@Icons.Material.Rounded.MicOff" 
+            ToggledIcon="@Icons.Material.Rounded.Mic"
+            Color="Color.Inherit" 
+            ToggledColor="Color.Primary"
+            Variant="Variant.Filled" 
+            Size="Size.Large"
+            Disabled="_jsModule is null || Disabled"/>
+    </MudBadge>
+</MudTooltip>
+
+
+@code {
+
+    
+    [Parameter]
+    public bool Recording { get; set; }
+    
+    [Parameter]
+    public EventCallback<bool> RecordingChanged { get; set; }
+    
+    [Parameter]
+    public EventCallback<string> OnNewRecording { get; set; }
+    
+    [Parameter]
+    public bool Disabled { get; set; }
+
+
+    private bool _jsInitialized;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<AudioRecordButton>? _dotNetRef;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_jsInitialized)
+        {
+            _jsInitialized = true;
+            try
+            {
+                _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Shared/AudioRecordButton.razor.js");
+                _dotNetRef = DotNetObjectReference.Create(this);
+                await _jsModule.InvokeVoidAsync("initialize", _dotNetRef);
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                
+            }
+        }
+    }
+    
+    
+    
+    private async Task OnRecordingChange(bool recording)
+    {
+        if (Recording == recording)
+            return;
+
+        Recording = recording;
+        await RecordingChanged.InvokeAsync(recording);
+        
+        if (recording)
+            await StartRecording();
+        else
+            await StopRecording();
+    }
+
+
+    private async Task StartRecording()
+    {
+        if (!Recording || _jsModule is null)
+            return;
+
+        await _jsModule.InvokeVoidAsync("startRecording");
+    }
+
+    private async Task StopRecording()
+    {
+        if (Recording || _jsModule is null)
+            return;
+
+        await _jsModule.InvokeVoidAsync("stopRecording");
+    }
+
+
+    [JSInvokable]
+    public async Task OnRecordingCompleted(string b64Wav)
+    {
+        if (!string.IsNullOrEmpty(b64Wav))
+            await OnNewRecording.InvokeAsync(b64Wav);
+    }
+    
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            _dotNetRef?.Dispose();
+            if (_jsModule is not null) 
+                await _jsModule.DisposeAsync();
+        }
+        catch (Exception e)
+        {
+        }
+    }
+}
