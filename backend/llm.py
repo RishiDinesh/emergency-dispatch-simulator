@@ -90,6 +90,21 @@ class LLM(object):
         if max_tokens:
             params["max_completion_tokens"] = max_tokens
         if response_format:
-            params["response_format"] = response_format
+            if isinstance(response_format, dict):
+                params["response_format"] = response_format
         response = self.client.chat.completions.create(**params)
         return response.choices[0].message
+    
+    def get_text_from_speech(
+                self,
+                messages: list[Message],
+                ) -> str:
+            
+            response = self.client.chat.completions.create(
+                model=self.asr_model,
+                messages=messages,
+                # max_completion_tokens=512,
+                temperature=0.1
+            )
+
+            return response.choices[0].message.content
