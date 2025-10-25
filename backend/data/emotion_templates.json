@@ -1,0 +1,156 @@
+{
+    "neutral": {
+        "male": [
+            {
+                "file_name": "neutral_male_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "neutral_male_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "file_name": "neutral_female_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "neutral_female_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    },
+    "sad_0": {
+        "male": [
+            {
+                "file_name": "sad_0_male_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "sad_0_male_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "file_name": "sad_0_female_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "sad_0_female_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    },
+    "sad_1": {
+        "male": [
+            {
+                "file_name": "sad_1_male_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "sad_1_male_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "file_name": "sad_1_female_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "sad_1_female_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    },
+    "angry_0": {
+        "male": [
+            {
+                "file_name": "angry_0_male_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "angry_0_male_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "file_name": "angry_0_female_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "angry_0_female_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    },
+    "angry_1": {
+        "male": [
+            {
+                "file_name": "angry_1_male_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "angry_1_male_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "file_name": "angry_1_female_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "angry_1_female_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    },
+    "fear_0": {
+        "male": [
+            {
+                "file_name": "fear_0_male_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "fear_0_male_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "file_name": "fear_0_female_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "fear_0_female_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    },
+    "fear_1": {
+        "male": [
+            {
+                "file_name": "fear_1_male_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "fear_1_male_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "file_name": "fear_1_female_1",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "file_name": "fear_1_female_2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    }
+}
