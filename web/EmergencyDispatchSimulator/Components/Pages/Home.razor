@@ -1,6 +1,5 @@
 ﻿@page "/"
 
-@inject IJSRuntime JS
 @inject IScrollManager ScrollManager
 
 <PageTitle>EDS - Home</PageTitle>
@@ -8,18 +7,21 @@
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudText Class="mb-12" Typo="Typo.h4">Create your own emergency dispatch simulation</MudText>
 
-    <MudForm Spacing="3">
+    <MudForm Model="_parameters" Spacing="3">
         @foreach (var optionGroupName in _optionGroupNames)
         {
-            <MudSelect T="string" Label="@optionGroupName.Replace('_', ' ')" ShrinkLabel>
+            <MudSelect T="string" Value="_parameters.GetParameter(optionGroupName)" ValueChanged="x => _parameters.SetParameter(optionGroupName, x)" Label="@optionGroupName.Replace('_', ' ')" Clearable>
                 @foreach (var option in ScenarioInputOptions.AvailableOptions[optionGroupName].Order())
                 {
                     <MudSelectItem Value="@option">@option.Replace('_', ' ')</MudSelectItem>
                 }
             </MudSelect>
         }
+        
+        <MudButton OnClick="OnFormSubmit" Color="Color.Primary">Submit</MudButton>
     </MudForm>
 </MudContainer>
+
 
 <MudDrawer Class="docs-page-content-navigation-drawer" Open Breakpoint="Breakpoint.Lg" Anchor="Anchor.End" ClipMode="DrawerClipMode.Always" Elevation="0" Color="Color.Transparent">
     <div class="GetPanelClass">
@@ -42,6 +44,8 @@
 
 @code {
 
+    private ScenarioInputParameters _parameters = new();
+
     private ValueTask OnNavLinkClick(string componentId) => ScrollManager.ScrollIntoViewAsync($"input-{componentId}", ScrollBehavior.Smooth);
 
     private readonly List<string> _optionGroupNames =
@@ -52,5 +56,10 @@
         ScenarioInputOptions.GroupLanguage,
         ScenarioInputOptions.Emotion,
     ];
+
+    private async Task OnFormSubmit()
+    {
+        
+    }
 
 }
