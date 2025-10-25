@@ -1,4 +1,6 @@
+using Blazored.LocalStorage;
 using EmergencyDispatchSimulator.Components;
+using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,12 @@ builder.Services.AddRazorComponents()
 
 // Add MudBlazor
 builder.Services.AddMudServices();
+MudGlobal.InputDefaults.Variant = Variant.Outlined;
+MudGlobal.InputDefaults.Margin = Margin.Dense;
+MudGlobal.Rounded = true;
+
+// Add local storage
+builder.Services.AddBlazoredLocalStorage();
 
 var app = builder.Build();
 
