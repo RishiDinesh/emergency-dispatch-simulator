@@ -3,24 +3,41 @@
 @inject ILocalStorageService LocalStorage
 
 
-<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" IsDarkModeChanged="DarkModeChanged" />
+<MudThemeProvider Theme="_theme" IsDarkMode />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
+
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudButton StartIcon="@Icons.Material.Filled.EmergencyShare" Color="Color.Inherit" Href="/" Variant="Variant.Text">EMERGENCY DISPATCH SIMULATOR</MudButton>
-        <MudSpacer/>
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" />
-        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" OnClick="_ => DarkModeChanged(!_isDarkMode)"/>
-    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Variant="DrawerVariant.Mini" MiniWidth="88px" Class="py-2 px-4 border-r-2 mud-border-surface border-solid">
+        <MudNavMenu>
+            @if (_drawerOpen)
+            {
+                <MudNavLink Class="mb-2" OnClick="_ => { _drawerOpen = false; }" Icon="@Icons.Material.Filled.MenuOpen"><b>EDS</b></MudNavLink>
+            }
+            else
+            {
+                <MudNavLink Class="mb-2" OnClick="_ => { _drawerOpen = true; }" Icon="@Icons.Material.Filled.Menu" />
+            }
+            
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
+        </MudNavMenu>   
+        
+        <MudSpacer />
+        
+        <MudNavMenu>
+            <MudNavLink Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Match="NavLinkMatch.All" Icon="@Icons.Custom.Brands.GitHub" IconColor="Color.Inherit">GitHub</MudNavLink>
+        </MudNavMenu>
+        
+    </MudDrawer>
     <MudMainContent>
         <div class="pa-4">
             @Body
         </div>
     </MudMainContent>
 </MudLayout>
+
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -30,13 +47,14 @@
 
 @code {
 
-    private bool _isDarkMode;
+    private bool _drawerOpen = true;
 
-    private MudTheme _theme = new MudTheme()
+    private MudTheme _theme = new()
     {
         PaletteDark = new()
         {
             Surface = "#191919",
+            TextPrimary = "#EBEBEB",
             Background = "#191919",
             DrawerBackground = "#191919",
             DrawerText = "#E0E0E0",
@@ -49,29 +67,6 @@
             AppbarHeight = "45px",
         }
     };
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _isDarkMode = await LocalStorage.GetItemAsync<bool>("IsDarkMode");
-            StateHasChanged();
-        }
-    }
-
-    private async Task DarkModeChanged(bool isDarkMode)
-    {
-        if (isDarkMode == _isDarkMode)
-            return;
-
-        _isDarkMode = isDarkMode;
-        try
-        {
-            await LocalStorage.SetItemAsync("IsDarkMode", isDarkMode);
-        }
-        catch
-        {
-        }
-    }
+    
 
 }

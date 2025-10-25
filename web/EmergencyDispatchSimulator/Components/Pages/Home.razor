@@ -1,7 +1,20 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>EDS - Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<MudGrid>
+    <MudItem xs="12" lg="6">
+        <div class="d-flex flex-column align-center justify-center" style="height: 100%; max-height: 80vh">
+            <MudText Typo="Typo.h4">Get Started</MudText>
+        </div>
+    </MudItem>
+    <MudItem xs="12" lg="6">
+        <div style="height: 80vh">
+            <MudForm Spacing="3">
+                <MudTextField T="string"/>
+                <MudTextField T="string"/>
+                <MudTextField T="string"/>
+            </MudForm>
+        </div>
+    </MudItem>
+</MudGrid>

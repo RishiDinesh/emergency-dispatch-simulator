@@ -12,7 +12,7 @@ builder.Services.AddRazorComponents()
 // Add MudBlazor
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
-MudGlobal.InputDefaults.Margin = Margin.Dense;
+// MudGlobal.InputDefaults.Margin = Margin.Dense;
 MudGlobal.Rounded = true;
 
 // Add local storage
