@@ -1,0 +1,37 @@
+{
+    "user": {
+        "incident": {
+            "incident_category": [ "medical_non_trauma", "trauma_injury", "behavioral_crisis", "overdose_poisoning", "obstetrics_childbirth", "fire_structure", "fire_vehicle", "fire_wildland", "explosion", "smoke_co_alarm", "gas_leak_hazmat", "electrical_utility", "traffic_collision_minor", "traffic_collision_major", "pedestrian_struck", "cyclist_struck", "vehicle_rollover", "hit_and_run", "public_transport_incident", "water_rescue_drowning", "ice_rescue", "search_and_rescue_missing_person", "building_collapse", "entrapment_confined_space", "animal_incident", "suspicious_person_vehicle", "burglary_in_progress", "robbery_in_progress", "theft_larceny", "assault_in_progress", "domestic_dispute_violence", "sexual_assault", "shots_fired", "stabbing_cutting", "active_violence_active_shooter", "hostage_barricade", "arson_suspected", "vandalism_property_damage", "civil_disturbance_riot", "disorderly_conduct_noise", "trespass", "welfare_check", "abduction_kidnapping", "suspicious_package", "bomb_threat", "power_outage_infrastructure", "road_hazard_debris", "weather_disaster", "aviation_incident", "train_derailment", "marine_incident", "unknown_trouble_911_hangup", "prank_false_call", "alarm_panic_holdup", "alarm_burglar", "alarm_fire"]  
+        },
+        "location": {
+            "location_type": ["house", "apartment", "street", "highway", "business", "school", "park", "rural", "highrise", "transit", "waterfront"]
+        },
+        "caller": {
+            "gender": ["male", "female"],
+            "emotion": ["angry", "sad", "fear", "neutral"],
+            "language": ["English", "Spanish", "French", "Mandarin", "Cantonese", "Arabic", "Hindi", "Punjabi", "Vietnamese", "Portuguese", "Russian"]
+        }
+    },
+    "system": {
+        "incident": {
+            "incident_status": ["ongoing", "just_occurred", "past", "escalating"],
+            "urgency_level": ["low", "medium", "high", "life_threatening"],
+            "call_progression": ["calms_over_time", "escalates_over_time", "stable", "sudden_hangup", "drop_and_reconnect"]
+        },
+        "location": {
+            "location_awareness": ["full_address", "cross_streets", "landmark_only", "gps_only", "unknown"],
+            "address_outcome": ["given_immediately_after_calling", "given_after_prompting", "unable_to_provide"]
+        },
+        "background": {
+            "time_of_day": ["dawn", "day", "dusk", "night", "late_night"],
+            "weather": ["clear", "rain", "snow", "heatwave", "cold_snap", "windy", "storm"],
+            "hazards_present": ["none", "fire_smoke", "traffic", "weapon_gun", "weapon_knife", "chemicals", "collapse_risk", "aggressive_animal", "hostile_crowd"]
+        },
+        "caller": {
+            "caller_role": ["victim", "witness", "third_party", "child", "interpreter", "perpetrator"],
+            "relationship_to_subject": ["self", "spouse_partner", "parent_child", "relative", "coworker", "neighbor", "stranger", "client_patient", "unknown"],
+            "willingness_to_follow_instructions": ["high", "moderate", "low", "refuses"],
+            "compliance": ["fully_cooperative", "partially_cooperative", "uncooperative_hostile", "prank_suspected"]
+        }
+    }
+}

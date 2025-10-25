@@ -1,0 +1,68 @@
+{
+    "sad_1": {
+        "male": [
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_03/03-01-04-02-01-01-03.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T071234Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=6b3af0094974828ad20ad951a1cbde9b557e829f66ac06515d554da9008dd20495401f3dc847b89dbbf5c6aad48ad49a1007dd8241b15a3c2c51f73fff217eb659bc45569b8a635f36d1912bed92d60a6852b05f5557dcb401dbaec9466745057b54871859383c8d9f72bca985dfd36bbf50349693f83a1bf96fc7855f6f8518a1d05038e9d8b1e9764a791998f96415e2594657a1a8c0a4becf541135495c71a15dd76c71325a979dc322770bcb0b34428fd981a19a16dfb53d954046702866b60757ddfb60f5ccb90230f82e1088926f826df17318e49fb498516932631a722c6eba415c62dc7fdfe8803cd009eda75e9d44fc19d4630ab14ce4e1a81051ec",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_03/03-01-04-02-02-02-03.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T071424Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=76f2030ce3cce3a43219b955b019b1fe9ce0b6381bda77233c776d2346e174136885c8b77be5d6f14bc552095a648762ee7083729d441ff5c13355c2824b0571d62e6a264f5a174c0c8323df4254265361e7597949af718c620c3e339e6a779d629a49a2e1940eb2dd877de10e6fb45235bd25087babf9162c59539c3bd68be197187ff430af18cbb80dcb7a3b878ac06941eae48dbf82b34bb7c8364f2760078bd87b67bcf7214c710219e916ac25a3d97f06f45cc79223c12a642f77fad4d5f284a0705a1f55e82b1c6ea938512be02d2b88c5003389d95cf365dde8ccead1f90baf4a8c51b2b555f99f3a0238a2a8547c86cb1db2acafb8fea148050642c2",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_06/03-01-04-02-01-01-06.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T071547Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=724e8b5f5d12554c5d84624a472e46f0181a27f7b1dec18951808f6888769dd8a8424f3e505b9e508d9cab031b2cb9c4e6359d6ccd253bbbe852d64151acd19c540cccd1a031c3b5f9be8e566571b0219f98a9806bfb8c9a34bd24e252f0dfb8da60a5d2d2479c888d02e059fc6456f28540906a871fb37ce9e96356fd08b8e91232a4bd9e3eaca8fab5e3c517126b37d23a869d3185c2a8f12d166dd8b54936ce545ac6e839630137ddf393433bd2fbd5d20029fd68d7e1a0800837e0d4c2cb56ce2b445e8a59db80c37bb79bedf3c9a78390bd135f1a2b8ee6cd734c6d789aa48090a7439e4729ec0d7bfba3b426b07fb52dab506892d43f6d943e25757ffa",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_06/03-01-04-02-02-01-06.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T071653Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=1a8e88bc36184980cad6b32bba319f550edb8c989e04722498f03dfec4eaa58ba6201ebfb33e7f778bd3c34f377760726ee4347e1ec413567c31bc5915eb4c04bdc0ebc2ae5307ccd99f5aa42e2fbaa12a446aca541a47512be9caeeb12b93a3ee71faab860e2ab805d1992704d25f09e337aa45d7c4634cabbcb69bdd6650103838ab1338d08ae706625a84845cf4ce0b9acc2b687e998384672e76f73d3953ae818231b4cd9cc99c0d77bcad15aedc4a55d60b5b0b1c4936b00b6db12c6b99fe7bfc986f099f3cdd8943c0fc634b42cc06a5fd32aea64dc3e47d1b94d682560b3309ae9e40ac91954863dcfe0d6c0d9af0c4cfa3bcf3470efd2dc8cfe111d4",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    },
+    "angry_1": {
+        "male": [
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_03/03-01-05-02-01-01-03.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T071918Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=c37672500a56f53c4e5ab3cc5f951c3bce134ba9d2f3e5e49eacd38c2daa35c1b8af92ef8ba65d3b6613c6a26f1218cc0f7c264765873bf6cbfebd3419a0917ba279bbec121af36d98e1712843576a322b87d8222e5864631b92c95db4e26b5ba3b6e9fa39fa02fcd67031a8523afdd04af3a64dc9a289fb8b013f4b6f112e779b2c792513ece1fcdafd4d407a40705751dbc95bbcd85156118f5627a8d7422f193c3b514f4beda84738c192e55f6565f729f6bb688eae83d07313b9c5ef3febc5023ccf7da1c3f3ccd0c9da39699a9bf3322e0f32e8a996d3bc45555853390aa8b8c8c45e6f07a257125b42e313038d67a705cf8e7cb2f02d8496e1515a4d38",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_03/03-01-05-02-02-02-03.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T071956Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=1e055814f48104ae1c7d9a2af2e7a613dd71c62a92b63dabacdac10f411668c07dcb565a6c18c4ad245a4d8d172a624ea0564c8318b79aa858856e11b6ab475a8e2e9b304c593d5703058a6b66c99ca42fa1fdf6f7ba4a57efa762cf553d85130a25c4814b5ade81f1e77ecc7d07ecb06a8a157eaa3fbee3f0fa72b84a5dc7cfa08a7326d471f96c173770ebce61b357227c0e87f13cb12e42f5599ef3f11d84ad1a56a334d69c3885034a6025f9ba4eeb485f746345a5dacfec6eabb738da4da93f67574cccc76e3bce7eec424dc3cf339347eb129a681b4556ce03bf348a93b0c75a8d1ed725c140c97a8f1689b7b91d3162d72e9ea6a2b9001eccfa8cbd2e",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_12/03-01-05-02-01-01-12.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T072434Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=0a7e9599a1692f97f4e447291d2e9dc1c4e87a1a78e91cce69d09d8bfd82439353df3e34ed4dc9784f7b11341a29d8911e4d3db70425d9ab0a16d8fb8085dc6e4427cf39ce589d7c8af20cc91c465f9d3b0e12c916c721ed4bde5c69dc46ef54cceb5da81f1a92f97bb8074330e331c7d91a12d15e8e512c9822c902c858f4efafdc87a18137b8cb68575e04c6d515a3148d5801443eedb00fee33f6bc2199023aa0db5aebb410578a3e1b6fc63ec2efc5927434e8cc175d890fda54211259e3ef91e6fcf4dc8566aa7bef33d435acc95e893466fdbf37c5ae8ec22029835cfac772b5dba5cccfdd61d6c124907a0aa5cdb7ec53278c20ce46e2a7e8ca79e13c",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_12/03-01-05-02-02-02-12.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T072300Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=50e02aae1542659e6656710e43ca37c41bd201da4585337cd1db9e2c4515acbd39be75aaa39cb35a18812fa7ad582214401da72abbf77724529932f706b823d148940a2888b3a128a2c187b05d44f12061312a54b31172396dd986fdfb893a0405b41727408a34ddd28f06f4a386b217bb84b1c29749e70c6fa9a05429923d706ca16566e4b7be9071c4b81db9d224eed93d390a90a1004d8a9cd38d6f57ee70f81eb32322b2e2d21acc964e7c10db1c9f3273c7c7caf5a953f1d412514336602091396565d786dab3bf25c871abe3f1a2b335209874a21207edaf6bd7007413467a3fb62c496e6a13bc9141c5a652914df5493064165c04bc3dd584d0da25ab",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    },
+    "fear_1": {
+        "male": [
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_03/03-01-06-02-01-02-03.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T072523Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=705a6d162a4cee42ce34e87790693d736226023d801b47c49b1b140262779535cd3f2f736ed1cbaac3e803dc6158ffc1f88d33e4942eea6f1575b5570e92a3ce720381c759ab22825291dd31fc8f5e601846f092d3c20494fee39eb0b061da598f2e822eca0a5bb57be6264f762d182594b4e950cae3b667a3f109d639769246b0b5ebe8c6683cd25b35a051d3e469d3db1f8d65d4baf3bc33b9cdec5dea1e554827683ed63674bba431285e5ebf061f383c296fd46accc3ead4eda0a7ec269058a492f7beeae073f81fb2f5789be6ecc5b41ca8b4b734230b7f790e50c45fc5738a4c0c8801c36d53f6fad372619837c3a01a38d85591fcba249284b6332bf8",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_03/03-01-06-02-02-02-03.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T072620Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=c99fca4e82803d936b349e6a848c5d7491786f95f900e7c96087f06edc398a76319cee730c0ee9fd1131e13f423180ef77af1ca9d8aaf89d4eda408c1597f5a805020c58bb87d1ac3a2ff8252a59b5ac273677815374c4a11677208833d1469d2df9531d7cdeee60189bf1fb23b4fb937b41093ce138b06312efade24be5f2457718dec363518b1d8e0b1e2b904b4313c8407892b311fad3eff9bb2ea8d2a893b323fac5f70fa0a43deb979fb7179a62b2eebf475425a41d63b43ab75237deae5e2e88cd288f66620077c80bb5db78a683af3aa1828ca1b329c2a749eef39eef885da9a8fd613ef7a2780da815d51560068d8672235e6169f0769c825601cf7a",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ],
+        "female": [
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_12/03-01-06-02-01-01-12.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T072734Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=bb6bda2cfe74b1762afed72d5fc4649b30db969af3ac2f1925d2f4b2f125fc0828272611704aebcef6d28d1a9e9fbc0e8cdd58f3c61fc114df3fd9cad8d26db450eff02f7f85f5153ed2e2ba94203c522f5c753a79024f686e819b44e3a78e604e53dbe2438f4171d9678900d81900940ccf54a693f504991f9045f0e3e38372521bacf5b234a46369670c2c0df305c2e025f02221170a08ccda64cd9de73c5fb755f3b1a3f9bc35a6926721d3e5497a8158f560e06ac0eb18eddfc5c66f438dc74ce5defd431418c47091aa60acc246b8c68f601e7fabae86a8a65b06ae54cfa146da29013baf3c4436e79e36820077fc6aa2c1067dd74e908504c7c990f3b5",
+                "transcript": "Kids are talking by the door"
+            },
+            {
+                "url": "https://storage.googleapis.com/kagglesdsdata/datasets/107620/256618/Actor_12/03-01-06-02-02-01-12.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251025%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251025T072827Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=8a7ca7af1dca1d93c3ea5e663734bae876759877329e2e0d6a3b2c292ccd3e2f25ab54ba9401e922ffab6acc7138a053a20cbd33a4a170fb9a3be1ab9510af71fe7cd0b2655087223b878f7f2825f781a6f6e93a7a5aa2d2d2c632e2c137a76a6f7ae99f806d39a0ee3f46850de7d2af0c98dfd3a3641ac46aed7e337cd27309952f05d82bf5e5d5aca00eaa569a603f28141cbe76bda1ae8d13e47e83a530d9a422f5a5d516ac4d5e568a919128dcba2e024fe3b55792d8579c525b4d20bd99fb34bb841a113969f432d596c32c31259947575d657e32173821cbbc4e8c1aecc792c7afc1b71c37a2acc529ebf5c0510fe558071e65c261415839553986cf7b",
+                "transcript": "Dogs are sitting by the door"
+            }
+        ]
+    }
+}

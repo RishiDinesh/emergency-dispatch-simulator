@@ -1,0 +1,3 @@
+# TASKS
+1. Transcribe the given user audio
+2. Provide a very brief emotion analysis of the audio (short phrase with few key words)
