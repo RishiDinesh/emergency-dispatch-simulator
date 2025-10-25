@@ -6,7 +6,7 @@ from backend.llm import LLM
 from backend.session import Session
 from backend.environment import Environment
 from backend.caller import Caller
-from backend._types import UserParams, Message, MessageContent, InputAudio, SpeechInAnalysis, TextResponse, EMOTION, Log
+from backend._types import UserParams, Message, MessageContent, InputAudio, EMOTION, Log
 from backend.utils import get_emotion_template
 
 async def _to_thread(fn, *a, **kw):
