@@ -1,6 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider Theme="_theme" IsDarkMode />
+@inject ILocalStorageService LocalStorage
+
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChange" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -11,20 +13,36 @@
         <MudNavMenu>
             @if (_drawerOpen)
             {
-                <MudNavLink Class="mb-2" OnClick="_ => { _drawerOpen = false; }" Icon="@Icons.Material.Filled.MenuOpen"><b>EDS</b></MudNavLink>
+                <MudNavLink Class="mb-2" OnClick="_ => { _drawerOpen = false; }" Icon="@Icons.Material.Rounded.MenuOpen"><b>EDS</b></MudNavLink>
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
             }
             else
             {
-                <MudNavLink Class="mb-2" OnClick="_ => { _drawerOpen = true; }" Icon="@Icons.Material.Filled.Menu" />
+                <MudNavLink Class="mb-2" OnClick="_ => { _drawerOpen = true; }" Icon="@Icons.Material.Rounded.Menu" />
+                
+                <MudTooltip Text="New Simulation" Placement="Placement.End" Arrow>
+                    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
+                </MudTooltip>
             }
-            
-            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
         </MudNavMenu>   
         
         <MudSpacer />
         
         <MudNavMenu>
-            <MudNavLink Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Match="NavLinkMatch.All" Icon="@Icons.Custom.Brands.GitHub" IconColor="Color.Inherit">GitHub</MudNavLink>
+            @if (_drawerOpen)
+            {
+                <div class="mud-full-width d-flex justify-center">
+                    <MudButtonGroup OverrideStyles="false">
+                        <MudIconButton OnClick="ToggleDarkMode" Icon="@DarkModeIcon" Color="Color.Inherit" />
+                        <MudIconButton Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+                    </MudButtonGroup>
+                </div>
+            }
+            else
+            {
+                <MudNavLink OnClick="ToggleDarkMode" Icon="@DarkModeIcon" IconColor="Color.Inherit" />
+                <MudNavLink Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Match="NavLinkMatch.All" Icon="@Icons.Custom.Brands.GitHub" IconColor="Color.Inherit">GitHub</MudNavLink>
+            }
         </MudNavMenu>
         
     </MudDrawer>
@@ -44,7 +62,11 @@
 
 @code {
 
+    private const string _darkModeLocalKey = "IsDarkMode";
+    private bool _isDarkMode;
     private bool _drawerOpen;
+
+    private string DarkModeIcon => _isDarkMode ? Icons.Material.Rounded.DarkMode : Icons.Material.Rounded.LightMode;
 
     private MudTheme _theme = new()
     {
@@ -64,6 +86,32 @@
             AppbarHeight = "45px",
         }
     };
-    
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+        
+        var localDarkMode = await LocalStorage.GetItemAsync<bool>(_darkModeLocalKey);
+        if (localDarkMode != _isDarkMode)
+        {
+            _isDarkMode = localDarkMode;
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task OnDarkModeChange(bool isDarkMode)
+    {
+        if (_isDarkMode == isDarkMode)
+            return;
+        
+        _isDarkMode = isDarkMode;
+        await LocalStorage.SetItemAsync(_darkModeLocalKey, _isDarkMode);
+    }
+
+    private Task ToggleDarkMode() => OnDarkModeChange(!_isDarkMode);
+
 
 }
