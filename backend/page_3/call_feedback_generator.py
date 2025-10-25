@@ -7,7 +7,7 @@ from call_data import CallData
 current_dir = os.getcwd()
 print(current_dir)
 
-BOSON_API_KEY = 'bai-tEOAbYEXTm4ZiPbEDqhf8hthP0dfYu1dJMKolqucaZYz2lvJ' #os.getenv("BOSON_API_KEY")
+BOSON_API_KEY = os.getenv("BOSON_API_KEY")
 
 def encode_audio_to_base64(file_path: str) -> str:
     """Encode audio file to base64 format."""
