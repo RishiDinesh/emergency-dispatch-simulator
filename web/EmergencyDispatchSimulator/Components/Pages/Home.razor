@@ -7,18 +7,22 @@
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudText Class="mb-12" Typo="Typo.h4">Create your own emergency dispatch simulation</MudText>
 
-    <MudForm Model="_parameters" Spacing="3">
+    <MudForm Model="_parameters" Spacing="12">
         @foreach (var optionGroupName in _optionGroupNames)
         {
-            <MudSelect T="string" Value="_parameters.GetParameter(optionGroupName)" ValueChanged="x => _parameters.SetParameter(optionGroupName, x)" Label="@optionGroupName.Replace('_', ' ')" Clearable>
-                @foreach (var option in ScenarioInputOptions.AvailableOptions[optionGroupName].Order())
+            var options = _availableOptions[optionGroupName];
+            
+            <MudSelect T="string" Value="_parameters.GetParameter(optionGroupName)" ValueChanged="x => _parameters.SetParameter(optionGroupName, x)" Label="@options.Label" HelperText="@options.Description" Clearable>
+                @foreach (var option in options.Options.Order())
                 {
                     <MudSelectItem Value="@option">@option.Replace('_', ' ')</MudSelectItem>
                 }
             </MudSelect>
         }
         
-        <MudButton OnClick="OnFormSubmit" Color="Color.Primary">Submit</MudButton>
+        <div class="mud-full-width d-flex flex-row align-center justify-end">
+            <MudButton OnClick="OnFormSubmit" Color="Color.Primary" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.KeyboardArrowRight">Create Simulation</MudButton>
+        </div>
     </MudForm>
 </MudContainer>
 
@@ -44,6 +48,7 @@
 
 @code {
 
+    private Dictionary<string, ScenarioInputOption> _availableOptions = ScenarioInputOptions.GetAvailableOptions();
     private ScenarioInputParameters _parameters = new();
 
     private ValueTask OnNavLinkClick(string componentId) => ScrollManager.ScrollIntoViewAsync($"input-{componentId}", ScrollBehavior.Smooth);
