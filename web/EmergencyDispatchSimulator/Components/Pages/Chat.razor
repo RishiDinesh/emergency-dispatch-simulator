@@ -38,20 +38,12 @@
     protected override async Task OnInitializedAsync()
     {
         // TODO: initialize web socket
+        _loading = false;
+        _chatInitialized = true;
+        StateHasChanged();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!_chatInitialized)
-        {
-            _chatInitialized = true;
-            await Task.Delay(1000);
-            _loading = false;
-            StateHasChanged();
-        }
-    }
-
-
+    
     private void HandleOutgoingMessage(string b64Wav)
     {
         // TODO:

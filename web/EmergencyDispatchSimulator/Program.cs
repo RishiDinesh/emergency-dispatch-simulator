@@ -15,8 +15,6 @@ builder.Services.AddRazorComponents()
         options.MaximumReceiveMessageSize = long.MaxValue; // for js interop (large .wav)
     });
 
-builder.Services.AddControllers();
-
 // Add MudBlazor
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
