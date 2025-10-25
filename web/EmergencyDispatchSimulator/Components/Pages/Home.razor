@@ -1,6 +1,8 @@
 ﻿@page "/"
 
 @inject IScrollManager ScrollManager
+@inject NavigationManager Navigation
+@inject Api.IEdsApi EdsApi
 
 <PageTitle>EDS - Home</PageTitle>
 
@@ -20,8 +22,8 @@
         }
         
         <div class="mud-full-width d-flex flex-row align-center justify-end gap-3 flex-wrap">
-            <MudButton OnClick="_ => RandomizeOptions(overwrite: true)" Color="Color.Inherit" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.Loop">Randomize</MudButton>
-            <MudButton OnClick="OnFormSubmit" Color="Color.Primary" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.KeyboardArrowRight">Create Simulation</MudButton>
+            <MudButton OnClick="_ => RandomizeOptions(overwrite: true)" Color="Color.Inherit" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.Loop" Disabled="_submitLoading">Randomize</MudButton>
+            <MudButton OnClick="OnFormSubmit" Color="Color.Primary" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.KeyboardArrowRight" Disabled="_submitLoading">Create Simulation</MudButton>
         </div>
     </MudForm>
 </MudContainer>
@@ -55,6 +57,8 @@
     private Dictionary<string, ScenarioInputOption> _availableOptions = ScenarioInputOptions.GetAvailableOptions();
     private ScenarioInputParameters _parameters = new();
 
+    private bool _submitLoading;
+
     private ValueTask OnNavLinkClick(string componentId) => ScrollManager.ScrollIntoViewAsync($"#{componentId}", ScrollBehavior.Smooth);
 
     private void RandomizeOptions(bool overwrite)
@@ -74,6 +78,9 @@
 
     private async Task OnFormSubmit()
     {
+        _submitLoading = true;
+        await InvokeAsync(StateHasChanged);
+
         // make sure each field is populated
         RandomizeOptions(overwrite: false);
         
@@ -84,9 +91,14 @@
             var tag = Convert.ToInt32(random.Next(0, 2) == 0); 
             emotion += $"_{tag}";
         }
-        _parameters.SetParameter(ScenarioInputOptions.Emotion, emotion);
+        _parameters.SetParameter(ScenarioInputOptions.Emotion, emotion!);
         
         // TODO: POST request to API
+        await EdsApi.CreateDispatchSimulation(_parameters);
+        
+        _submitLoading = false;
+        
+        Navigation.NavigateTo("/chat");
     }
 
 }
