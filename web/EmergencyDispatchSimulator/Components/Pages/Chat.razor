@@ -3,13 +3,68 @@
 @inject Api.IEdsApi EdsApi
 
 
+<div class="mud-full-width d-flex flex-column align-center justify-space-between" style="height: 85vh">
+    @if (_loading)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="80%" Width="80%"/>
+        <div class="d-flex flex-row align-center gap-10">
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="64px" Width="64px"/>
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="64px" Width="64px"/>
+        </div>
+    }
+    else
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="80%" Width="80%"/>
+        <div class="d-flex flex-row align-center gap-10">
+            
+            <MudTooltip Text="Push to begin speaking" Placement="Placement.Top" Arrow>
+                <MudBadge Visible="_isUserSpeaking" Color="Color.Error" Overlap Bordered>
+                    <MudToggleIconButton
+                        Toggled="_isUserSpeaking" 
+                        ToggledChanged="UserSpeakingChanged" 
+                        Class="pa-4" 
+                        Icon="@Icons.Material.Rounded.MicOff" 
+                        ToggledIcon="@Icons.Material.Rounded.Mic"
+                        Color="Color.Inherit" 
+                        ToggledColor="Color.Primary"
+                        Variant="Variant.Filled" 
+                        Size="Size.Large"/>
+                </MudBadge>
+            </MudTooltip>
 
-
+            <MudTooltip Text="End Call" Placement="Placement.Top" Arrow>
+                <MudIconButton Class="pa-4" Icon="@Icons.Material.Rounded.CallEnd" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large"/>
+            </MudTooltip>
+        </div>
+    }
+</div>
 
 
 @code {
 
-    private bool _loading;
+    private bool _loading = true;
 
+    private bool _isUserSpeaking;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(1000);
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task UserSpeakingChanged(bool isUserSpeaking)
+    {
+        if (_isUserSpeaking == isUserSpeaking)
+            return;
+
+        _isUserSpeaking = isUserSpeaking;
+        await InvokeAsync(StateHasChanged);
+    }
 
 }
