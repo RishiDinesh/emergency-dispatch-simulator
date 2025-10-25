@@ -5,15 +5,14 @@
 <PageTitle>EDS - Home</PageTitle>
 
 <MudContainer Class="pb-2" MaxWidth="MaxWidth.Small">
-    <MudText Class="mb-6" Typo="Typo.h4">Create your own emergency dispatch simulation</MudText>
+    <MudText Typo="Typo.h4">Create your own emergency dispatch simulation</MudText>
+    <MudText Class="mb-6" Typo="Typo.subtitle2">Only select what you want controlled. Leave blank for a randomized selection.</MudText>
 
-    <MudForm Model="_parameters" Spacing="6">
-        @foreach (var optionGroupName in _optionGroupNames)
+    <MudForm Model="_parameters" Spacing="3">
+        @foreach (var (optionGroupName, options) in _availableOptions)
         {
-            var options = _availableOptions[optionGroupName];
-            
             <MudSelect Id="@optionGroupName" T="string" Value="_parameters.GetParameter(optionGroupName)" ValueChanged="x => _parameters.SetParameter(optionGroupName, x)" Label="@options.Label" HelperText="@options.Description" Clearable>
-                @foreach (var option in options.Options.Order())
+                @foreach (var option in options.Options.OrderBy(x => x != "English").ThenBy(x => x))
                 {
                     <MudSelectItem Value="@option">@option.Replace('_', ' ')</MudSelectItem>
                 }
@@ -21,7 +20,7 @@
         }
         
         <div class="mud-full-width d-flex flex-row align-center justify-end gap-3 flex-wrap">
-            <MudButton OnClick="OnFormSubmit" Color="Color.Inherit" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.Loop">Randomize</MudButton>
+            <MudButton OnClick="_ => RandomizeOptions(overwrite: true)" Color="Color.Inherit" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.Loop">Randomize</MudButton>
             <MudButton OnClick="OnFormSubmit" Color="Color.Primary" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.KeyboardArrowRight">Create Simulation</MudButton>
         </div>
     </MudForm>
@@ -37,9 +36,8 @@
                     Contents
                 </MudText>
 
-                @foreach (var optionGroupName in _optionGroupNames)
+                @foreach (var (optionGroupName, options) in _availableOptions)
                 {
-                    var options = _availableOptions[optionGroupName];
                     <MudNavLink Match="NavLinkMatch.All" OnClick="_ => OnNavLinkClick(optionGroupName)">
                         @options.Label
                     </MudNavLink>
@@ -59,18 +57,25 @@
 
     private ValueTask OnNavLinkClick(string componentId) => ScrollManager.ScrollIntoViewAsync($"#{componentId}", ScrollBehavior.Smooth);
 
-    private readonly List<string> _optionGroupNames =
-    [
-        ScenarioInputOptions.GroupCategory,
-        ScenarioInputOptions.GroupLocation,
-        ScenarioInputOptions.GroupGender,
-        ScenarioInputOptions.GroupLanguage,
-        ScenarioInputOptions.Emotion,
-    ];
+    private void RandomizeOptions(bool overwrite)
+    {
+        Random random = new();
+        foreach (var (optionGroupName, options) in _availableOptions)
+        {
+            // only set parameter if overwrite is true, or parameter is empty
+            if (!overwrite && !string.IsNullOrEmpty(_parameters.GetParameter(optionGroupName)))
+                continue;
+            
+            var choice = options.Options.OrderBy(x => random.NextDouble()).First();
+            _parameters.SetParameter(optionGroupName, choice);
+        }
+    }
+    
 
     private async Task OnFormSubmit()
     {
-        
+        // make sure each field is populated
+        RandomizeOptions(overwrite: false);
     }
 
 }
