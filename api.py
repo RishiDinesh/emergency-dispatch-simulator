@@ -1,12 +1,13 @@
 # api.py
 import os
+import json
 import base64
 import asyncio
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, Form, WebSocket, WebSocketDisconnect, Query
+from fastapi import FastAPI, Form, WebSocket, WebSocketDisconnect
 
 from backend.simulator import Simulator
 from backend.session import Session
@@ -24,7 +25,6 @@ simulator_task: Optional[asyncio.Task] = None
 current_user_params: Optional[UserParams] = None
 
 
-
 @app.get("/")
 async def read_root():
     return {"message": "Hello World"}
@@ -38,7 +38,9 @@ async def submit_form(
     gender: str = Form(...),
     language: str = Form(...),
 ):
-    
+    """
+    Start (or restart) the Simulator with the form inputs.
+    """
     global simulator_task, current_user_params
 
     current_user_params = UserParams(
@@ -49,8 +51,10 @@ async def submit_form(
         language=language,
     )
 
+    # Expose queues to the Simulator
     Session.set(input_queue=input_queue, output_queue=output_queue)
 
+    # Cancel any running simulator and start a new one
     if simulator_task and not simulator_task.done():
         simulator_task.cancel()
         try:
@@ -67,84 +71,102 @@ async def submit_form(
     }
 
 
+def _extract_b64_from_text(t: str) -> Optional[str]:
+    """
+    Accepts:
+      - raw base64
+      - data URLs like 'data:audio/wav;base64,<b64>'
+      - JSON like '{"data":"<b64>"}'
+    Returns validated base64 string, or None if invalid.
+    """
+    s = t.strip()
+
+    # JSON wrapper
+    if s.startswith("{"):
+        try:
+            s = json.loads(s).get("data", "").strip()
+        except Exception:
+            return None
+
+    # data URL
+    if s.startswith("data:"):
+        try:
+            s = s.split(",", 1)[1].strip()
+        except Exception:
+            return None
+
+    # Validate base64
+    try:
+        base64.b64decode(s, validate=True)
+        return s
+    except Exception:
+        return None
 
 
-@app.websocket("/ws/upload")
-async def ws_upload(
-    ws: WebSocket,
-    codec: Optional[str] = Query(None, description="e.g., wav, webm-opus, ogg"),
-):
+@app.websocket("/ws/stream")
+async def ws_stream(ws: WebSocket):
+   
     await ws.accept()
 
+    # Ensure simulator is ready
     if current_user_params is None or simulator_task is None or simulator_task.done():
         await ws.send_text("Simulator not initialized. Submit form first.")
         await ws.close(code=1011)
         return
 
-    # Optional debug copy
-    ext = "wav" if (codec and "wav" in codec.lower()) else "raw"
-    dbg_path = AUDIO_SAVE_DIR / f"{datetime.utcnow():%Y%m%d-%H%M%S}-upload.{ext}"
-    f = dbg_path.open("ab", buffering=0)
+    stop = asyncio.Event()
 
-    buf = bytearray()
-    try:
-        while True:
-            msg = await ws.receive()
+    async def reader():
+        try:
+            while not stop.is_set():
+                msg = await ws.receive()
+                if msg["type"] == "websocket.disconnect":
+                    stop.set()
+                    break
 
-            if msg["type"] == "websocket.disconnect":
-                break
+                if msg["type"] == "websocket.receive":
+                    t = msg.get("text")
+                    if t is None:
+                        continue
 
-            if msg["type"] == "websocket.receive":
-                if (b := msg.get("bytes")) is not None:
-                    buf.extend(b)
-                    f.write(b)
-                elif (t := msg.get("text")) is not None:
-                    if t.strip().lower() == "stop":
+                    if t.strip().lower() == "close":
+                        stop.set()
                         break
 
-        if buf:
-            b64 = base64.b64encode(bytes(buf)).decode("utf-8")
-            await input_queue.put({"data": b64})
-
-    except WebSocketDisconnect:
-        pass
-    except Exception as e:
-        print(f"[UPLOAD] error: {e!r}")
-        try:
-            await ws.close(code=1011)
+                    b64 = _extract_b64_from_text(t)
+                    if b64:
+                        await input_queue.put({"data": b64})
+                    else:
+                        await ws.send_text('{"error":"invalid_base64"}')
+        except WebSocketDisconnect:
+            stop.set()
         except Exception:
-            pass
-    finally:
-        try: f.close()
-        except Exception: pass
-        try: await ws.close()
-        except Exception: pass
+            stop.set()
 
+    async def writer():
+        try:
+            while not stop.is_set():
+                item = await output_queue.get()
+                if item is None:
+                    continue
+                b64 = item.get("data")
+                if not b64:
+                    continue
+                await ws.send_text(b64)
+        except WebSocketDisconnect:
+            stop.set()
+        except Exception:
+            stop.set()
 
+    t_read = asyncio.create_task(reader())
+    t_write = asyncio.create_task(writer())
+    await stop.wait()
 
+    for t in (t_read, t_write):
+        t.cancel()
+    await asyncio.gather(t_read, t_write, return_exceptions=True)
 
-@app.websocket("/ws/download")
-async def ws_download(ws: WebSocket):
-    await ws.accept()
     try:
-        while True:
-            item = await output_queue.get() 
-            if item is None:
-                break
-            b64 = item.get("data")
-            if not b64:
-                continue
-            try:
-                data = base64.b64decode(b64)
-            except Exception:
-                continue
-            await ws.send_bytes(data)
-    except WebSocketDisconnect:
+        await ws.close()
+    except Exception:
         pass
-    except Exception as e:
-        print(f"[DOWNLOAD] error: {e!r}")
-    finally:
-        try:
-            await ws.close()
-        except Exception:
-            pass
