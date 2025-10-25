@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using EmergencyDispatchSimulator.Api;
 using EmergencyDispatchSimulator.Components;
 using MudBlazor;
 using MudBlazor.Services;
@@ -17,6 +18,9 @@ MudGlobal.Rounded = true;
 
 // Add local storage
 builder.Services.AddBlazoredLocalStorage();
+
+// Add Emergency Dispatch Service API
+builder.Services.AddScoped<IEdsApi, EdsApi>();
 
 var app = builder.Build();
 
