@@ -1,7 +1,7 @@
 @page "/chat"
 
 @inject Api.IEdsApi EdsApi
-
+@inject IDialogService DialogService
 
 <div class="mud-full-width d-flex flex-column align-center justify-space-between" style="height: 85vh">
     @if (_loading)
@@ -14,6 +14,8 @@
     }
     else
     {
+        <NavigationLock OnBeforeInternalNavigation="ConfirmNavigation" ConfirmExternalNavigation />
+        
         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="80%" Width="80%"/>
         <div class="d-flex flex-row align-center gap-10">
             
@@ -43,14 +45,15 @@
 @code {
 
     private bool _loading = true;
+    private bool _chatInitialized;
 
     private bool _isUserSpeaking;
 
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!_chatInitialized)
         {
+            _chatInitialized = true;
             await Task.Delay(1000);
             _loading = false;
             StateHasChanged();
@@ -66,5 +69,20 @@
         _isUserSpeaking = isUserSpeaking;
         await InvokeAsync(StateHasChanged);
     }
+
+
+    private async Task ConfirmNavigation(LocationChangingContext context)
+    {
+        var confirm = await DialogService.ShowMessageBox(
+            "Confirm",
+            "You are in an active call. Are you sure you want to leave?",
+            yesText: "Leave",
+            cancelText: "Stay"
+        );
+        
+        if (confirm != true)
+            context.PreventNavigation();
+    }
+
 
 }
