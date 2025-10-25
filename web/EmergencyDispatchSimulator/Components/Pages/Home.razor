@@ -2,19 +2,12 @@
 
 <PageTitle>EDS - Home</PageTitle>
 
-<MudGrid>
-    <MudItem xs="12" lg="6">
-        <div class="d-flex flex-column align-center justify-center" style="height: 100%; max-height: 80vh">
-            <MudText Typo="Typo.h4">Get Started</MudText>
-        </div>
-    </MudItem>
-    <MudItem xs="12" lg="6">
-        <div style="height: 80vh">
-            <MudForm Spacing="3">
-                <MudTextField T="string"/>
-                <MudTextField T="string"/>
-                <MudTextField T="string"/>
-            </MudForm>
-        </div>
-    </MudItem>
-</MudGrid>
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudText Class="mb-12" Typo="Typo.h4">Create your own emergency dispatch simulation</MudText>
+
+    <MudForm Spacing="3">
+        <MudTextField T="string"/>
+        <MudTextField T="string"/>
+        <MudTextField T="string"/>
+    </MudForm>
+</MudContainer>

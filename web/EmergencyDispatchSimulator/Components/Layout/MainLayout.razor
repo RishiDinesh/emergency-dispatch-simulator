@@ -1,8 +1,5 @@
 ﻿@inherits LayoutComponentBase
 
-@inject ILocalStorageService LocalStorage
-
-
 <MudThemeProvider Theme="_theme" IsDarkMode />
 <MudPopoverProvider />
 <MudDialogProvider />
@@ -10,7 +7,7 @@
 
 
 <MudLayout>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Variant="DrawerVariant.Mini" MiniWidth="88px" Class="py-2 px-4 border-r-2 mud-border-surface border-solid">
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Variant="DrawerVariant.Mini" MiniWidth="88px" Class="py-2 px-4 border-r mud-border-surface border-solid">
         <MudNavMenu>
             @if (_drawerOpen)
             {
@@ -47,7 +44,7 @@
 
 @code {
 
-    private bool _drawerOpen = true;
+    private bool _drawerOpen;
 
     private MudTheme _theme = new()
     {
