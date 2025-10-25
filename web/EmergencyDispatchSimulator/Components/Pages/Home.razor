@@ -76,6 +76,17 @@
     {
         // make sure each field is populated
         RandomizeOptions(overwrite: false);
+        
+        var emotion = _parameters.GetParameter(ScenarioInputOptions.Emotion);
+        if (emotion is "anger" or "sad" or "fear")
+        {
+            Random random = new();
+            var tag = Convert.ToInt32(random.Next(0, 2) == 0); 
+            emotion += $"_{tag}";
+        }
+        _parameters.SetParameter(ScenarioInputOptions.Emotion, emotion);
+        
+        // TODO: POST request to API
     }
 
 }
