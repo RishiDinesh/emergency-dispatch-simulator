@@ -1,10 +1,11 @@
 @page "/chat"
 
-@implements IDisposable
+@implements IAsyncDisposable
 
 @inject Api.IEdsApi EdsApi
 @inject IDialogService DialogService
 @inject ChatWebSocketService ChatService
+@inject IJSRuntime JS
 
 
 <div class="mud-full-width d-flex flex-column align-center justify-space-between" style="height: 85vh">
@@ -22,9 +23,19 @@
         {
             <NavigationLock OnBeforeInternalNavigation="ConfirmNavigation" ConfirmExternalNavigation />
             
-            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="80%" Width="80%"/>
+            <div class="d-flex align-center justify-center" style="height: 80%; width: 80%">
+                @if (_audioPlaying)
+                {
+                    <img src="audio-wave.gif" alt="audio" style="min-height: 300px; min-width: 300px; width: 100%" />
+                }
+                else
+                {
+                    <MudDivider />
+                }
+            </div>
+            
             <div class="d-flex flex-row align-center gap-10">
-                <AudioRecordButton OnNewRecording="HandleOutgoingMessage" />
+                <AudioRecordButton OnNewRecording="HandleOutgoingMessage" Disabled="_audioPlaying" />
                 <MudTooltip Text="End Call" Placement="Placement.Top" Arrow>
                     <MudIconButton Class="pa-4" Icon="@Icons.Material.Rounded.CallEnd" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large"/>
                 </MudTooltip>
@@ -41,6 +52,11 @@
 @code {
 
     private bool _loading = true;
+    private bool _audioPlaying;
+
+    private DotNetObjectReference<Chat>? _dotNetRef;
+    private IJSObjectReference? _jsModule;
+    private bool _jsInitialized;
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,6 +70,24 @@
         StateHasChanged();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_jsInitialized)
+        {
+            _jsInitialized = true;
+            try
+            {
+                _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Chat.razor.js");
+                _dotNetRef = DotNetObjectReference.Create(this);
+                await _jsModule.InvokeVoidAsync("initialize", _dotNetRef);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+    }
+
     
     private async Task HandleOutgoingMessage(string b64Wav)
     {
@@ -64,6 +98,9 @@
     private async Task HandleIncomingMessage(string b64Wav)
     {
         // TODO:
+        _audioPlaying = true;
+        await _jsModule!.InvokeVoidAsync("playB64Wav", b64Wav);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ConfirmNavigation(LocationChangingContext context)
@@ -80,9 +117,21 @@
     }
 
 
-    public void Dispose()
+    [JSInvokable]
+    public async Task OnAudioStopped()
+    {
+        _audioPlaying = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    public async ValueTask DisposeAsync()
     {
         ChatService.MessageReceived -= HandleIncomingMessage;
         ChatService.StatusChanged -= Console.WriteLine;
+        
+        _dotNetRef?.Dispose();
+        if (_jsModule is not null)
+            await _jsModule.DisposeAsync();
     }
 }
