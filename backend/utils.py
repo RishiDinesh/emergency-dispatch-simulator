@@ -1,5 +1,4 @@
 import json
-import requests
 import base64
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from backend._types import Message, MessageContent, InputAudio
@@ -10,24 +9,25 @@ def get_emotion_template(emotion: str, gender: str):
         templates = json.load(f)
 
     items = templates[emotion][gender]
-    urls = [item["url"] for item in items]
+    filenames = [item["file_name"] for item in items]
     transcripts = [item["transcript"] for item in items]
 
-    def fetch_b64(url: str) -> str:
-        r = requests.get(url, timeout=10)
-        r.raise_for_status()
-        return base64.b64encode(r.content).decode("utf-8")
+    def load_b64(filename: str) -> str:
+        path = f"backend/data/emotion_template_files/{filename}.wav"
+        with open(path, "rb") as f:
+            data = f.read()
+        return base64.b64encode(data).decode("utf-8")
 
     # Fetch in parallel
-    encoded = [None] * len(urls)
+    encoded = [None] * len(filenames)
     with ThreadPoolExecutor(max_workers=2) as pool:
-        future_to_idx = {pool.submit(fetch_b64, url): i for i, url in enumerate(urls)}
+        future_to_idx = {pool.submit(load_b64, fname): i for i, fname in enumerate(filenames)}
         for fut in as_completed(future_to_idx):
             i = future_to_idx[fut]
             try:
                 encoded[i] = fut.result()
             except Exception as e:
-                raise RuntimeError(f"Failed to fetch {urls[i]}: {e}") from e
+                raise RuntimeError(f"Failed to fetch {filenames[i]}: {e}") from e
 
     # Build messages
     messages = []
