@@ -35,19 +35,27 @@
                     <MudButtonGroup OverrideStyles="false">
                         <MudIconButton OnClick="ToggleDarkMode" Icon="@DarkModeIcon" Color="Color.Inherit" />
                         <MudIconButton Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+                        <MudIconButton Href="https://www.boson.ai/" Target="_blank" Icon="@CustomIcons.Boson" Color="Color.Inherit" />
                     </MudButtonGroup>
                 </div>
             }
             else
             {
-                <MudNavLink OnClick="ToggleDarkMode" Icon="@DarkModeIcon" IconColor="Color.Inherit" />
-                <MudNavLink Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Match="NavLinkMatch.All" Icon="@Icons.Custom.Brands.GitHub" IconColor="Color.Inherit">GitHub</MudNavLink>
+                <MudTooltip Text="Toggle dark mode" Placement="Placement.End" Arrow>
+                    <MudNavLink OnClick="ToggleDarkMode" Icon="@DarkModeIcon" IconColor="Color.Inherit" />
+                </MudTooltip>
+                <MudTooltip Text="Source repo" Placement="Placement.End" Arrow>
+                    <MudNavLink Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Match="NavLinkMatch.All" Icon="@Icons.Custom.Brands.GitHub" IconColor="Color.Inherit" />
+                </MudTooltip>
+                <MudTooltip Text="Boson AI" Placement="Placement.End" Arrow>
+                    <MudNavLink Href="https://www.boson.ai/" Target="_blank" Match="NavLinkMatch.All" Icon="@CustomIcons.Boson" IconColor="Color.Inherit" />
+                </MudTooltip>
             }
         </MudNavMenu>
         
     </MudDrawer>
     <MudMainContent>
-        <div class="pa-4">
+        <div class="px-4 pb-4">
             @Body
         </div>
     </MudMainContent>

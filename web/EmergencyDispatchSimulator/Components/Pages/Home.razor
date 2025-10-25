@@ -4,15 +4,15 @@
 
 <PageTitle>EDS - Home</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Small">
-    <MudText Class="mb-12" Typo="Typo.h4">Create your own emergency dispatch simulation</MudText>
+<MudContainer Class="pb-2" MaxWidth="MaxWidth.Small">
+    <MudText Class="mb-6" Typo="Typo.h4">Create your own emergency dispatch simulation</MudText>
 
-    <MudForm Model="_parameters" Spacing="12">
+    <MudForm Model="_parameters" Spacing="6">
         @foreach (var optionGroupName in _optionGroupNames)
         {
             var options = _availableOptions[optionGroupName];
             
-            <MudSelect T="string" Value="_parameters.GetParameter(optionGroupName)" ValueChanged="x => _parameters.SetParameter(optionGroupName, x)" Label="@options.Label" HelperText="@options.Description" Clearable>
+            <MudSelect Id="@optionGroupName" T="string" Value="_parameters.GetParameter(optionGroupName)" ValueChanged="x => _parameters.SetParameter(optionGroupName, x)" Label="@options.Label" HelperText="@options.Description" Clearable>
                 @foreach (var option in options.Options.Order())
                 {
                     <MudSelectItem Value="@option">@option.Replace('_', ' ')</MudSelectItem>
@@ -20,30 +20,36 @@
             </MudSelect>
         }
         
-        <div class="mud-full-width d-flex flex-row align-center justify-end">
+        <div class="mud-full-width d-flex flex-row align-center justify-end gap-3 flex-wrap">
+            <MudButton OnClick="OnFormSubmit" Color="Color.Inherit" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.Loop">Randomize</MudButton>
             <MudButton OnClick="OnFormSubmit" Color="Color.Primary" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.KeyboardArrowRight">Create Simulation</MudButton>
         </div>
     </MudForm>
 </MudContainer>
 
+@* Disable this for now *@
+@if (false)
+{
+    <MudDrawer Class="docs-page-content-navigation-drawer" Open Breakpoint="Breakpoint.Lg" Anchor="Anchor.End" ClipMode="DrawerClipMode.Always" Elevation="0" Color="Color.Transparent">
+        <div class="d-flex flex-column">
+            <MudNavMenu Class="pl-4 mb-4">
+                <MudText Typo="Typo.subtitle1" Class="title" GutterBottom="true">
+                    Contents
+                </MudText>
 
-<MudDrawer Class="docs-page-content-navigation-drawer" Open Breakpoint="Breakpoint.Lg" Anchor="Anchor.End" ClipMode="DrawerClipMode.Always" Elevation="0" Color="Color.Transparent">
-    <div class="GetPanelClass">
-        <MudNavMenu Class="pl-4">
-            <MudText Typo="Typo.subtitle1" Class="title" GutterBottom="true">
-                Contents
-            </MudText>
-
-            @* @foreach (var i in Enumerable.Range(0, 10)) *@
-            @* { *@
-            @*     var j = i; *@
-            @*     <MudNavLink Match="NavLinkMatch.All" OnClick="_ => OnNavLinkClick(j.ToString())"> *@
-            @*         @i.ToString() *@
-            @*     </MudNavLink> *@
-            @* } *@
-        </MudNavMenu>
-    </div>
-</MudDrawer>
+                @foreach (var optionGroupName in _optionGroupNames)
+                {
+                    var options = _availableOptions[optionGroupName];
+                    <MudNavLink Match="NavLinkMatch.All" OnClick="_ => OnNavLinkClick(optionGroupName)">
+                        @options.Label
+                    </MudNavLink>
+                }
+            </MudNavMenu>
+            
+            <MudButton Class="mx-4" OnClick="OnFormSubmit" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Create Simulation</MudButton>
+        </div>
+    </MudDrawer>
+}
 
 
 @code {
@@ -51,7 +57,7 @@
     private Dictionary<string, ScenarioInputOption> _availableOptions = ScenarioInputOptions.GetAvailableOptions();
     private ScenarioInputParameters _parameters = new();
 
-    private ValueTask OnNavLinkClick(string componentId) => ScrollManager.ScrollIntoViewAsync($"input-{componentId}", ScrollBehavior.Smooth);
+    private ValueTask OnNavLinkClick(string componentId) => ScrollManager.ScrollIntoViewAsync($"#{componentId}", ScrollBehavior.Smooth);
 
     private readonly List<string> _optionGroupNames =
     [
