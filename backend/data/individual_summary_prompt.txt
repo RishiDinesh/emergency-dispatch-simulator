@@ -1,0 +1,4 @@
+I am the operator in this conversation. 
+Give me a description of the last response in the conversation. 
+What is the tone of the response? 
+If I was the last one to talk, then how did I respond to the caller?
