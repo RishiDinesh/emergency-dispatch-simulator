@@ -41,7 +41,6 @@ async def ws_upload(
 
     await ws.accept()
 
-    # Choose a file extension based on codec hint
     ext = "webm"
     if codec:
         cl = codec.lower()
@@ -54,7 +53,6 @@ async def ws_upload(
         elif "mp3" in cl:
             ext = "mp3"
 
-    # Create a unique file for this recording session
     timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
     out_path = os.path.join(AUDIO_SAVE_DIR, f"{timestamp}-recording.{ext}")
 
