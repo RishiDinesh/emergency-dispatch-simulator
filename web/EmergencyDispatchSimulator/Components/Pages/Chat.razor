@@ -21,22 +21,7 @@
         
         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="80%" Width="80%"/>
         <div class="d-flex flex-row align-center gap-10">
-            
-            <MudTooltip Text="Push to begin speaking" Placement="Placement.Top" Arrow>
-                <MudBadge Visible="_isUserSpeaking" Color="Color.Error" Overlap Bordered>
-                    <MudToggleIconButton
-                        Toggled="_isUserSpeaking" 
-                        ToggledChanged="UserSpeakingChanged" 
-                        Class="pa-4" 
-                        Icon="@Icons.Material.Rounded.MicOff" 
-                        ToggledIcon="@Icons.Material.Rounded.Mic"
-                        Color="Color.Inherit" 
-                        ToggledColor="Color.Primary"
-                        Variant="Variant.Filled" 
-                        Size="Size.Large"/>
-                </MudBadge>
-            </MudTooltip>
-
+            <AudioRecordButton OnNewRecording="HandleOutgoingMessage" />
             <MudTooltip Text="End Call" Placement="Placement.Top" Arrow>
                 <MudIconButton Class="pa-4" Icon="@Icons.Material.Rounded.CallEnd" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large"/>
             </MudTooltip>
@@ -49,9 +34,6 @@
 
     private bool _loading = true;
     private bool _chatInitialized;
-
-    private bool _isUserSpeaking;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,22 +52,15 @@
     }
 
 
-    private void HandleNewMessage(string message)
+    private void HandleOutgoingMessage(string b64Wav)
     {
-        
+        // TODO:
     }
 
-
-    private async Task UserSpeakingChanged(bool isUserSpeaking)
+    private void HandleIncomingMessage(string message)
     {
-        if (_isUserSpeaking == isUserSpeaking)
-            return;
-
-        _isUserSpeaking = isUserSpeaking;
-        
-        await InvokeAsync(StateHasChanged);
+        // TODO:
     }
-
 
     private async Task ConfirmNavigation(LocationChangingContext context)
     {
