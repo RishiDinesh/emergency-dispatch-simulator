@@ -4,6 +4,7 @@
 
 @inject Api.IEdsApi EdsApi
 @inject IDialogService DialogService
+@inject ChatWebSocketService ChatService
 
 
 <div class="mud-full-width d-flex flex-column align-center justify-space-between" style="height: 85vh">
@@ -17,15 +18,22 @@
     }
     else
     {
-        <NavigationLock OnBeforeInternalNavigation="ConfirmNavigation" ConfirmExternalNavigation />
-        
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="80%" Width="80%"/>
-        <div class="d-flex flex-row align-center gap-10">
-            <AudioRecordButton OnNewRecording="HandleOutgoingMessage" />
-            <MudTooltip Text="End Call" Placement="Placement.Top" Arrow>
-                <MudIconButton Class="pa-4" Icon="@Icons.Material.Rounded.CallEnd" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large"/>
-            </MudTooltip>
-        </div>
+        if (ChatService.IsConnected)
+        {
+            <NavigationLock OnBeforeInternalNavigation="ConfirmNavigation" ConfirmExternalNavigation />
+            
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="80%" Width="80%"/>
+            <div class="d-flex flex-row align-center gap-10">
+                <AudioRecordButton OnNewRecording="HandleOutgoingMessage" />
+                <MudTooltip Text="End Call" Placement="Placement.Top" Arrow>
+                    <MudIconButton Class="pa-4" Icon="@Icons.Material.Rounded.CallEnd" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large"/>
+                </MudTooltip>
+            </div>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Error">There was a problem connecting to the simulator</MudAlert>
+        }
     }
 </div>
 
@@ -33,23 +41,27 @@
 @code {
 
     private bool _loading = true;
-    private bool _chatInitialized;
 
     protected override async Task OnInitializedAsync()
     {
-        // TODO: initialize web socket
+        // Subscribe to the service's event to receive messages
+        ChatService.MessageReceived += HandleIncomingMessage;
+        ChatService.StatusChanged += Console.WriteLine;
+        // Attempt connection
+        await ChatService.ConnectAsync();
+
         _loading = false;
-        _chatInitialized = true;
         StateHasChanged();
     }
 
     
-    private void HandleOutgoingMessage(string b64Wav)
+    private async Task HandleOutgoingMessage(string b64Wav)
     {
         // TODO:
+        await ChatService.SendAsync(b64Wav);
     }
 
-    private void HandleIncomingMessage(string message)
+    private async Task HandleIncomingMessage(string b64Wav)
     {
         // TODO:
     }
@@ -70,6 +82,7 @@
 
     public void Dispose()
     {
-        // ChatWebSocket.MessageReceived -= HandleNewMessage;
+        ChatService.MessageReceived -= HandleIncomingMessage;
+        ChatService.StatusChanged -= Console.WriteLine;
     }
 }
