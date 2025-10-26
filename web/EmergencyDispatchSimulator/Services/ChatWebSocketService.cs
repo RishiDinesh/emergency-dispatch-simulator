@@ -18,11 +18,13 @@ public class ChatWebSocketService : IAsyncDisposable
 
     public bool IsConnected => _ws?.State == WebSocketState.Open;
 
-    private const string ExternalApiUrl = "ws://localhost:8000/ws"; 
-    
     public ChatWebSocketService()
     {
-        _webSocketUri = new Uri(ExternalApiUrl);
+        // ws://localhost:8000/ws
+        var apiUrl = Environment.GetEnvironmentVariable("BACKEND_WS_URL") 
+                     ?? throw new ArgumentNullException("BACKEND_WS_URL");
+        
+        _webSocketUri = new Uri(apiUrl);
         _ws = new ClientWebSocket();
         _cts = new CancellationTokenSource();
     }
