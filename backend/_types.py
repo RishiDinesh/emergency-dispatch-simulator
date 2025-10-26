@@ -75,4 +75,4 @@ class Log:
     timestamp: float
     audio: str
     transcription: str
-    emotion: EMOTION | str
+    emotion: EMOTION | None

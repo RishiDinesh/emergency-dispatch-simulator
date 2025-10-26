@@ -1,25 +1,35 @@
+import re
 import time
 import json
-import base64
 import asyncio
+import logging
 from backend.llm import LLM
-from backend.session import Session
 from backend.environment import Environment
 from backend.caller import Caller
 from backend._types import UserParams, Message, MessageContent, InputAudio, EMOTION, Log
-from backend.utils import get_emotion_template
+from backend.utils import get_emotion_template, memory_to_string
+
+logger = logging.getLogger(__name__)
 
 async def _to_thread(fn, *a, **kw):
     return await asyncio.to_thread(fn, *a, **kw)
 
 class Simulator(object):
 
-    def __init__(self, user_params: UserParams, stream: bool = True):
+    def __init__(self,
+        user_params: UserParams,
+        input_queue: asyncio.Queue,
+        output_queue: asyncio.Queue,
+        stream: bool = False
+    ):
         self.llm = LLM()
         caller = Caller()
         env = Environment()
+        logger.info("Initializing simulator")
         self.env_params = env.get_env_params(user_params)
+        logger.info(f"Initialized environment with params:\n{json.dumps(self.env_params, indent=2)}")
         self.caller_role = caller.generate_role(self.env_params)
+        logger.info(f"Initialized caller with role: {self.caller_role}")
         self.system_prompt = self.set_system_prompt(self.caller_role)
         self.emotion_template = get_emotion_template(
             emotion = user_params.emotion,
@@ -30,8 +40,11 @@ class Simulator(object):
         self.current_emotion: EMOTION = user_params.emotion
         self.gender = user_params.gender
         self.simulation_logs = []
+        self.input_queue = input_queue
+        self.output_queue = output_queue
     
     def set_current_emotion(self, emotion: EMOTION):
+        logger.info(f"Updating emotion from {self.current_emotion} to : {emotion}")
         self.current_emotion = emotion
         self.env_params["emotion"] = emotion
     
@@ -40,80 +53,74 @@ class Simulator(object):
             prompt_template = f.read()
         return prompt_template.format(role = caller_role)
     
-    async def analyze_speech_in(self, speech_in: str) -> list[str, str]:
-        with open("backend/prompts/analyze_speech_in.txt", "r") as f:
+    async def transcribe_speech_in(self, speech_in: str) -> str:
+        with open("backend/prompts/transcribe_speech_in.txt", "r") as f:
             prompt = f.read()
-        print("analzying speech in")
+        logger.info("Transcribing speech input")
         def _call():
-            return json.loads(self.llm.get_chat_completion(
+            messages = [
+                Message(role = "system", content = prompt),
+                Message(role = "user", content = [MessageContent(type = "input_audio", input_audio = InputAudio(data = speech_in, format = "wav"))])
+            ]
+            completion = self.llm.get_chat_completion(
                 model = self.llm.asr_model,
-                messages = [
-                    Message(role = "system", content = prompt),
-                    Message(
-                        role = "user",
-                        content = [
-                            MessageContent(
-                                type = "input_audio",
-                                input_audio = InputAudio(
-                                    data = speech_in,
-                                    format = "wav"
-                                )
-                            )
-                        ]
-                    )
-                ],
-                temperature = 0.0,
-                response_format = { "type": "json_object" } 
-            ).content)
-        analysis = await _to_thread(_call)
-        print(analysis)
-        return (
-            analysis["transcription"],
-            analysis["emotion_analysis"]
-        )
+                messages = messages
+            ).content
+            return completion
+        transcription = await _to_thread(_call)
+        logger.info(f"Transcription: {transcription}")
+        return transcription
     
-    async def get_text_out(self, speech_in: str):
-        # add the system header
-        messages = [Message(role = "system", content = self.system_prompt)]
-        # add memory
-        messages = messages + self.memory
-        with open("backend/prompts/generate_response.txt", "r") as f:
+    async def get_output_emotion(self, speech_in: str):
+        with open("backend/prompts/get_output_emotion.txt", "r") as f:
             prompt_template = f.read()
         prompt = prompt_template.format(current_emotion = self.current_emotion)
-        # add response instructions and input speech
-        messages.extend([
-            Message(
-                role = "system",
-                content = prompt
-            ),
-            Message(
-                role = "user",
-                content = [
-                    MessageContent(
-                        type = "input_audio",
-                        input_audio = InputAudio(
-                            data = speech_in,
-                            format = "wav"
-                        )
-                    )
-                ]
-            )
-        ])
-        print("generating text out")
+        messages = [
+            Message(role = "system", content = prompt),
+            Message(role = "user", content = [MessageContent(type = "input_audio", input_audio = InputAudio(data = speech_in, format = "wav"))])
+        ]
+        logger.info("Generating output emotion")
         def _call():
-            return json.loads(self.llm.get_chat_completion(
+            completion = self.llm.get_chat_completion(
                 model = self.llm.asr_model,
                 messages = messages,
-                temperature = 0.0,
-                response_format= { "type": "json_object" }
-            ).content)
-        res = await _to_thread(_call)
-        print(res)
-        return (
-            res["text_response"],
-            res["updated_emotion"]
-        )
+                temperature=0.0
+            ).content
+            return completion
+        response = await _to_thread(_call)
+        pattern = r'\b(neutral|fear_[01]|angry_[01]|sad_[01])\b'
+        match = re.search(pattern, response, flags=re.IGNORECASE)
+        result = match.group(1).lower() if match else self.current_emotion
+        logger.info(result)
+        return result
     
+    async def get_text_out(self, speech_in: str):
+        memory_str = memory_to_string(self.memory.copy())
+        prompt = self.system_prompt + f"\n\n#CONVERSATION HISTORY:\n{memory_str}"
+        with open("backend/prompts/generate_response.txt", "r") as f:
+            resp_instructions = f.read()
+        resp_instructions = resp_instructions.format(current_emotion = self.current_emotion)
+        prompt = prompt + f"\n\n{resp_instructions}"
+        with open("prompt.txt", "w") as f:
+            f.write(prompt)
+        
+        messages = [
+            Message(role = "system", content = prompt),
+            Message(role = "user", content = [MessageContent(type = "input_audio", input_audio = InputAudio(data = speech_in, format = "wav"))])
+        ]
+        
+        logger.info("Generating text output")
+        def _call():
+            completion = self.llm.get_chat_completion(
+                model = self.llm.asr_model,
+                messages = messages,
+                temperature=0.0
+            ).content
+            return completion
+        res = await _to_thread(_call)
+        logger.info(res)
+        return res
+
     def get_speech_out(self, text_out):
         messages = get_emotion_template(
             emotion = self.current_emotion,
@@ -121,54 +128,60 @@ class Simulator(object):
         )
         messages.append(Message(
             role = "user",
-            content = text_out
+            content = f"[SPEAKER] {text_out}"
         ))
         generator = self.llm.get_speech_from_chat_completion(messages, self.stream)
-        yield from generator
-
+        data = next(generator)
+        return data
     
     async def run_simulation(self):
-        input_queue: asyncio.Queue = Session.get("input_queue")
-        output_queue: asyncio.Queue = Session.get("output_queue")
+        skip = True
+        emotion_out = None
         while True:
             
-            payload = await input_queue.get()
+            payload = await self.input_queue.get()
             if payload is None:
+                logger.info("Ending simulation loop")
                 break
-            print("running sim step")
             user_msg_ts = time.time()
             speech_in = payload["data"]
-            transcript_in, emotion_in = await self.analyze_speech_in(speech_in)
-            text_out, emotion_out = await self.get_text_out(speech_in)
-            # async with asyncio.TaskGroup() as tg:
-            #     analyze_task = tg.create_task(self.analyze_speech_in(speech_in), name="analyze_speech_in")
-            #     text_task = tg.create_task(self.get_text_out(speech_in),     name="get_text_out")
-            # (transcript_in, emotion_in) = analyze_task.result()
-            # (text_out, emotion_out) = text_task.result()
+            logger.info("Received speech input from user")
 
-            # update current emotion
-            self.set_current_emotion(emotion_out)
+            transcript_in = await self.transcribe_speech_in(speech_in)
+            if skip:
+                skip = False
+            else:
+                emotion_out = await self.get_output_emotion(speech_in)
+                self.set_current_emotion(emotion_out)
             
-            chunks = []
-            for chunk in self.get_speech_out(text_out):
-                await output_queue.put({"data": chunk})
-                chunks.append(base64.b64decode(chunk))
+            text_out = await self.get_text_out(speech_in)
+            speech_out = self.get_speech_out(text_out)
+            await self.output_queue.put({"data": speech_out})
+            logger.info(f"Completed simulation for input msg: {transcript_in}")
             self.simulation_logs.extend([
                 Log(
                     role = "user",
                     timestamp = user_msg_ts,
                     audio = speech_in,
                     transcription = transcript_in,
-                    emotion = emotion_in
+                    emotion = None
                 ),
                 Log(
                     role = "assistant",
                     timestamp = time.time(),
-                    audio = base64.b64encode(b''.join(chunks)).decode("utf-8"),
+                    audio = speech_out,
                     transcription = text_out,
                     emotion = emotion_out
                 )
             ])
-
-
-
+            self.memory.extend([
+                Message(
+                    role = "user",
+                    content = transcript_in
+                ),
+                Message(
+                    role = "assistant",
+                    content = text_out
+                )
+            ])
+        return self.simulation_logs

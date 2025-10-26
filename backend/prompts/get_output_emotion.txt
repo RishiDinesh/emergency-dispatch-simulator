@@ -1,0 +1,23 @@
+You are given an audio clip. Infer the speaker’s emotion and rough intensity (normal vs strong) and update your current emotion based on this.
+
+# CURRENT EMOTION
+{current_emotion}
+
+Reply with one of:
+- neutral   — steady, neutral; complete sentences.
+- fear_0 — worried; tentative; a few hesitations.
+- fear_1 — panicked; very short, urgent phrases; repeat key facts.
+- angry_0 — irritated; clipped, firm wording.
+- angry_1 — hostile; sharp, abrupt phrasing.
+- sad_0 — tearful but coherent; scattered starts.
+- sad_1 — sobbing/strained; few words; repeats.
+
+## Switching rules:
+- If the user's audio is strong/hostile, Escalate one step (e.g., fear_0→fear_1)
+- If the user audio is calm and supportive:
+    - if at level 1 emotion, de-escalate to level 0
+    - if at level 0 emotion, de-escalate to neutral
+- Hold if mixed signals; avoid oscillation. Max one step per turn.
+
+# OUTPUT:
+Output ONLY one of neutral, fear_0, fear_1, angry_0, angry_1, sad_0, sad_1

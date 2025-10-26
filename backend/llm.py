@@ -1,6 +1,5 @@
 import os
 import openai
-import base64
 from dotenv import load_dotenv
 from backend._types import Message
 
@@ -8,19 +7,21 @@ load_dotenv()
 
 class LLM(object):
 
-    def __init__(self):
-        self.client = openai.Client(
-            api_key = os.getenv("API_KEY"),
-            base_url = os.getenv("BASE_URL")
-        )
+    def __init__(self, use_oai = False):
+        if use_oai:
+            self.client = openai.Client(api_key = os.getenv("OAI_API_KEY"))
+        else:
+            self.client = openai.Client(
+                api_key = os.getenv("API_KEY"),
+                base_url = os.getenv("BASE_URL")
+            )
         # defined here for simplicity
         self.tts_model = "higgs-audio-generation-Hackathon"
         self.asr_model = "higgs-audio-understanding-Hackathon"
         self.chat_model = "Qwen3-32B-non-thinking-Hackathon"
-        self.reasoning_model = "Qwen3-32B-thinking-Hackathon"
+        self.reasoning_model = "Qwen3-14B-Hackathon"
         self.omni_model = "Qwen3-Omni-30B-A3B-Thinking-Hackathon"
-    
-    # def get_text_from_speech(self)
+        self.oai_model = "gpt-4o-audio-preview"
     
     def get_speech_from_text(
             self,
@@ -28,7 +29,7 @@ class LLM(object):
             text: str,
             voice: str,
             with_streaming: bool,
-            response_format: str = "pcm",
+            response_format: str = "wav",
             speed: float = 1.0,
             chunk_size: int = 2048
     ):
@@ -51,7 +52,7 @@ class LLM(object):
     def get_speech_from_chat_completion(
             self,
             messages: list[Message],
-            stream = True
+            stream = False
     ):
         
         response = self.client.chat.completions.create(
@@ -59,9 +60,11 @@ class LLM(object):
             model = self.tts_model,
             temperature = 1.0,
             modalities=["audio"],
-            audio={"format": "wav"},
             max_completion_tokens=4096,
-            stream=stream
+            top_p=0.95,
+            stream=stream,
+            stop=["<|eot_id|>", "<|end_of_text|>", "<|audio_eos|>"],
+            extra_body={"top_k": 50}
         )
         if not stream:
             yield response.choices[0].message.audio.data
@@ -79,19 +82,19 @@ class LLM(object):
             messages: list[Message],
             model: str,
             max_tokens: int|None = None,
-            temperature: float|None = 0.0,
+            temperature: float|None = None,
             response_format: dict|None = None
     ):
         params = {
             "model": model,
-            "messages": [m.to_dict() for m in messages],
-            "temperature": temperature
+            "messages": [m.to_dict() for m in messages]
         }
         if max_tokens:
             params["max_completion_tokens"] = max_tokens
+        if temperature:
+            params["temperature"] = temperature
         if response_format:
-            if isinstance(response_format, dict):
-                params["response_format"] = response_format
+            params["response_format"] = response_format
         response = self.client.chat.completions.create(**params)
         return response.choices[0].message
     
@@ -100,11 +103,11 @@ class LLM(object):
                 messages: list[Message],
                 ) -> str:
             
-            response = self.client.chat.completions.create(
-                model=self.asr_model,
-                messages=messages,
-                # max_completion_tokens=512,
-                temperature=0.1
-            )
+        response = self.client.chat.completions.create(
+            model=self.asr_model,
+            messages=messages,
+            # max_completion_tokens=512,
+            temperature=0.1
+        )
 
-            return response.choices[0].message.content
+        return response.choices[0].message.content

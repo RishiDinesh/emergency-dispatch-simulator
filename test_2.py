@@ -1,23 +1,12 @@
-import asyncio
-
-from backend.simulator import Simulator
-from backend.session import Session
-from backend._types import UserParams
-
-input_queue = asyncio.Queue()
-output_queue = asyncio.Queue()
-
-simulator = Simulator(
-    user_params = UserParams(
-        incident = "house fire",
-        location = "house",
-        emotion = "fear_1",
-        gender = "male",
-        language = "english"
-    )
-)
-
 import base64
+import asyncio
+from backend.simulator import Simulator
+from backend._types import UserParams
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 
 def file_to_base64(filename: str) -> str:
     with open(filename, "rb") as f:
@@ -29,13 +18,23 @@ def base64_to_file(b64_str: str, output_filename: str):
     with open(output_filename, "wb") as f:
         f.write(data)
 
+import logging
+logger = logging.getLogger(__name__)
 async def main():
-    Session.set(
-        input_queue = input_queue,
-        output_queue = output_queue
+    logger.info("hello")
+    input_queue = asyncio.Queue()
+    output_queue = asyncio.Queue()
+    simulator = Simulator(
+        input_queue=input_queue,
+        output_queue=output_queue,
+        user_params = UserParams(
+            incident = "house fire",
+            location = "house",
+            emotion = "fear_1",
+            gender = "male",
+            language = "english"
+        )
     )
-
-
 
     asyncio.create_task(simulator.run_simulation())
     user_messages_list = [
