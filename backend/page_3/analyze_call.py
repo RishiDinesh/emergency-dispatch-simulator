@@ -9,13 +9,20 @@ class AnalyzeCall(object):
 
     def generate_summary(self, message_index=-1):
         if message_index == -1:
-            output_questions = "/backend/data/summary_prompt.txt"
+            output_questions_path = "backend/data/summary_prompt.txt"
         else: 
-            output_questions = "/backend/data/individual_summary_prompt.txt"
+            output_questions_path = "backend/data/individual_summary_prompt.txt"
+        
+        with open(output_questions_path, "r") as f:
+            output_questions = f.read()
+
 
         system_content = "You are a 911 call trainer evaluating operator performance. Here is a conversation."
 
-        guidelines = "/backend/data/operator_evaluation_guidelines.txt"
+        # guidelines_path = "backend/data/operator_evaluation_guidelines.txt"
+        
+        # with open(guidelines_path, "r") as f:
+        #     guidelines = f.read()
 
         followup_questions = "Organize your feedback into three bulletpoints for things I did well and three bulletpoints for things I did poorly. Focus on how I said what I said as well as what I said. Don't be too verbose."
 
@@ -42,7 +49,7 @@ class AnalyzeCall(object):
         messages.append(Message(role = "user", content = output_questions))
         if message_index == len(self.call_logs)-1:
             messages.append(Message(role = "user", content = followup_questions))
-            messages.append(Message(role = "user", content = guidelines))
+            # messages.append(Message(role = "user", content = guidelines))
 
         return self.llm.get_text_from_speech(messages = messages)
     
