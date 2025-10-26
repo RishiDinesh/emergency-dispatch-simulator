@@ -136,6 +136,7 @@ class Simulator(object):
     
     async def run_simulation(self):
         skip = True
+        emotion_out = None
         while True:
             
             payload = await self.input_queue.get()
