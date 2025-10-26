@@ -78,9 +78,9 @@
             // Attempt connection
             await ChatService.ConnectAsync();
         }
-        catch
+        catch (Exception e)
         {
-
+            Console.WriteLine($"Error initializing Chat: {e.Message}");
         }
         finally
         {
@@ -102,7 +102,7 @@
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine($"Error Rendering Chat JS: {e.Message}");
             }
         }
     }
@@ -141,10 +141,19 @@
 
     private async Task EndCall()
     {
-        // TODO
-
-        _forceNav = true;
-        Navigation.NavigateTo("/summary");
+        try
+        {
+            var chatLogs = await EdsApi.GetChatLogAsync();
+            Console.WriteLine($"Received chat log with {chatLogs.data.Count} messages");
+            var chatSummary = await EdsApi.GetChatSummaryAsync();
+            Console.WriteLine($"Received chat summary: {chatSummary}");
+            _forceNav = true;
+            Navigation.NavigateTo("/summary");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error ending call: {e.Message}");
+        }
     }
 
 

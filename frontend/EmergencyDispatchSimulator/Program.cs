@@ -25,7 +25,7 @@ MudGlobal.Rounded = true;
 builder.Services.AddBlazoredLocalStorage();
 
 // Add Emergency Dispatch Service API
-builder.Services.AddScoped<IEdsApi, EdsApi>();
+builder.Services.AddSingleton<IEdsApi, EdsApi>();
 
 // Add web socket service as singleton
 builder.Services.AddTransient<ChatWebSocketService>();
