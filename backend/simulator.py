@@ -42,7 +42,8 @@ class Simulator(object):
         self.simulation_logs = []
         self.input_queue = input_queue
         self.output_queue = output_queue
-        self.save_logs = True
+        self.save_cache = True
+        self.folder_name = user_params.generate_id()
     
     def set_system_prompt(self, caller_role: str):
         with open("backend/prompts/init_simulation.txt", "r") as f:
@@ -106,7 +107,7 @@ class Simulator(object):
         data = next(generator)
         return data
     
-    async def run_simulation(self, load_from_logs = False):
+    async def run_simulation(self, load_from_cache = True):
         counter = 0
         transcript_in, text_out, speech_out = None, None, None
         while True:
@@ -119,17 +120,23 @@ class Simulator(object):
             speech_in = payload["data"]
             logger.info("Received speech input from user")
 
-            if load_from_logs:
-                with open(f"backend/recordings/log_{counter}.json", "r") as f:
-                    cache = json.load(f)
-                transcript_in = cache[0]["transcription"]
-                text_out = cache[1]["transcription"]
-                speech_out = cache[1]["audio"]
-                time.sleep(3)
-            else:
+            if load_from_cache:
+                try:
+                    logger.info("Loading from logs")
+                    with open(f"backend/recordings/{self.folder_name}/log_{counter}.json", "r") as f:
+                        cache = json.load(f)
+                    transcript_in = cache[0]["transcription"]
+                    text_out = cache[1]["transcription"]
+                    speech_out = cache[1]["audio"]
+                    time.sleep(3)
+                except Exception as _:
+                    logger.warning(f"Cache load failed , falling back to live processing.")
+                    load_from_cache = False  # force fallback
+            if not load_from_cache:
                 transcript_in = await self.transcribe_speech_in(speech_in)
                 text_out = await self.get_text_out(speech_in)
                 speech_out = self.get_speech_out(text_out)
+            
             await self.output_queue.put({"data": speech_out})
             logger.info(f"Completed simulation for input msg: {transcript_in}")
             logs = [
@@ -157,10 +164,11 @@ class Simulator(object):
                     content = text_out
                 )
             ])
-            if self.save_logs:
-                log_dir = Path("backend/recordings")
+            if self.save_cache:
+                log_dir = Path(f"backend/recordings/{self.folder_name}")
                 log_dir.mkdir(parents=True, exist_ok=True)
                 log_path = log_dir / f"log_{counter}.json"
+                logger.info(f"Saving to {log_path}")
                 with open(log_path, "w") as f:
                     d = [l.to_dict() for l in logs]
                     json.dump(d, f, indent=2)

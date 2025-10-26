@@ -1,6 +1,7 @@
+import json
+import hashlib
 from dataclasses import dataclass, asdict, is_dataclass
 from typing import Optional, Union, Literal
-from pydantic import BaseModel
 
 EMOTION = Literal["sad_0", "sad_1", "angry_0", "angry_1", "fear_0", "fear_1", "neutral"]
 
@@ -68,6 +69,10 @@ class UserParams:
 
     def to_dict(self):
         return asdict(self)
+    
+    def generate_id(self) -> str:
+        data_str = json.dumps(self.to_dict(), sort_keys=True)
+        return hashlib.sha256(data_str.encode('utf-8')).hexdigest()[:12]  # shorter ID
 
 @dataclass
 class Log:
