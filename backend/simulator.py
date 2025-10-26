@@ -1,4 +1,3 @@
-import re
 import time
 import json
 import asyncio
@@ -43,19 +42,13 @@ class Simulator(object):
         self.input_queue = input_queue
         self.output_queue = output_queue
     
-    def set_current_emotion(self, emotion: EMOTION):
-        logger.info(f"Updating emotion from {self.current_emotion} to : {emotion}")
-        self.current_emotion = emotion
-        self.env_params["emotion"] = emotion
-    
     def set_system_prompt(self, caller_role: str):
         with open("backend/prompts/init_simulation.txt", "r") as f:
             prompt_template = f.read()
         return prompt_template.format(role = caller_role)
     
     async def transcribe_speech_in(self, speech_in: str) -> str:
-        with open("backend/prompts/transcribe_speech_in.txt", "r") as f:
-            prompt = f.read()
+        prompt = "Transcribe the given user audio. Output only the transcription."
         logger.info("Transcribing speech input")
         def _call():
             messages = [
@@ -70,29 +63,6 @@ class Simulator(object):
         transcription = await _to_thread(_call)
         logger.info(f"Transcription: {transcription}")
         return transcription
-    
-    async def get_output_emotion(self, speech_in: str):
-        with open("backend/prompts/get_output_emotion.txt", "r") as f:
-            prompt_template = f.read()
-        prompt = prompt_template.format(current_emotion = self.current_emotion)
-        messages = [
-            Message(role = "system", content = prompt),
-            Message(role = "user", content = [MessageContent(type = "input_audio", input_audio = InputAudio(data = speech_in, format = "wav"))])
-        ]
-        logger.info("Generating output emotion")
-        def _call():
-            completion = self.llm.get_chat_completion(
-                model = self.llm.asr_model,
-                messages = messages,
-                temperature=0.0
-            ).content
-            return completion
-        response = await _to_thread(_call)
-        pattern = r'\b(neutral|fear_[01]|angry_[01]|sad_[01])\b'
-        match = re.search(pattern, response, flags=re.IGNORECASE)
-        result = match.group(1).lower() if match else self.current_emotion
-        logger.info(result)
-        return result
     
     async def get_text_out(self, speech_in: str):
         memory_str = memory_to_string(self.memory.copy())
@@ -135,8 +105,6 @@ class Simulator(object):
         return data
     
     async def run_simulation(self):
-        skip = True
-        emotion_out = None
         while True:
             
             payload = await self.input_queue.get()
@@ -148,12 +116,6 @@ class Simulator(object):
             logger.info("Received speech input from user")
 
             transcript_in = await self.transcribe_speech_in(speech_in)
-            if skip:
-                skip = False
-            else:
-                emotion_out = await self.get_output_emotion(speech_in)
-                self.set_current_emotion(emotion_out)
-            
             text_out = await self.get_text_out(speech_in)
             speech_out = self.get_speech_out(text_out)
             await self.output_queue.put({"data": speech_out})
@@ -163,15 +125,13 @@ class Simulator(object):
                     role = "user",
                     timestamp = user_msg_ts,
                     audio = speech_in,
-                    transcription = transcript_in,
-                    emotion = None
+                    transcription = transcript_in
                 ),
                 Log(
                     role = "assistant",
                     timestamp = time.time(),
                     audio = speech_out,
-                    transcription = text_out,
-                    emotion = emotion_out
+                    transcription = text_out
                 )
             ])
             self.memory.extend([

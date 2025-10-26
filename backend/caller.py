@@ -25,6 +25,6 @@ class Caller(object):
                     content = prompt
                 )
             ],
-            model = self.llm.chat_model
+            model = self.llm.reasoning_model
         )
         return _strip_think(response.content)

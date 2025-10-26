@@ -6,14 +6,21 @@ import asyncio
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+import binascii
+import base64
 
 
 from fastapi import FastAPI, Form, WebSocket, WebSocketDisconnect,  HTTPException, Query
 
 from backend.simulator import Simulator
 from backend.page_3.analyze_call import AnalyzeCall
-from backend.session import Session
 from backend._types import UserParams
+
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 
 app = FastAPI()
 
@@ -35,6 +42,19 @@ async def startup_event():
 @app.get("/")
 async def read_root():
     return {"message": "Hello World"}
+
+@app.get("/get_conversation")
+async def analyze():
+    sim = getattr(app.state, "simulator", None)
+    if sim is None:
+        raise HTTPException(status_code=400, detail="Simulator not started.")
+
+    logs = getattr(sim, "simulation_logs", None)
+    if not logs:
+        raise HTTPException(status_code=400, detail="No simulation logs yet.")
+
+    logs_snapshot = list(logs)
+    return {"data": logs_snapshot}
 
 @app.get("/analyze_conversation")
 async def analyze():
@@ -88,7 +108,7 @@ async def submit_form(
         except Exception:
             pass
 
-    sim = Simulator(user_params=current_user_params, stream=True, input_queue=input_queue, output_queue=output_queue)
+    sim = Simulator(user_params=current_user_params, stream=False, input_queue=input_queue, output_queue=output_queue)
     simulator_task = asyncio.create_task(sim.run_simulation())
 
     app.state.simulator = sim
@@ -101,15 +121,7 @@ async def submit_form(
 
 
 def _extract_b64_from_text(t: str) -> Optional[str]:
-    """
-    Accepts:
-      - raw base64
-      - data URLs like 'data:audio/wav;base64,<b64>'
-      - JSON like '{"data":"<b64>"}'
-    Returns validated base64 string, or None if invalid.
-    """
     s = t.strip()
-
     # JSON wrapper
     if s.startswith("{"):
         try:
@@ -176,12 +188,19 @@ async def ws_stream(ws: WebSocket):
         try:
             while not stop.is_set():
                 item = await output_queue.get()
-                if item is None:
+                if not item:
                     continue
+
                 b64 = item.get("data")
                 if not b64:
                     continue
-                await ws.send_text(b64)
+                try:
+                    chunk_bytes = base64.b64decode(b64, validate=True)
+                except (binascii.Error, ValueError):
+                    continue
+
+                # send a binary WS frame (byte array)
+                await ws.send_bytes(chunk_bytes)
         except WebSocketDisconnect:
             stop.set()
         except Exception:
