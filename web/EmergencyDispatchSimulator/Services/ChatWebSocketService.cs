@@ -24,6 +24,8 @@ public class ChatWebSocketService : IAsyncDisposable
         var apiUrl = Environment.GetEnvironmentVariable("BACKEND_WS_URL") 
                      ?? throw new ArgumentNullException("BACKEND_WS_URL");
         
+        Console.WriteLine($"Creating web socket at {apiUrl}");
+        
         _webSocketUri = new Uri(apiUrl);
         _ws = new ClientWebSocket();
         _cts = new CancellationTokenSource();

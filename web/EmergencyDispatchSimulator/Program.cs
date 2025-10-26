@@ -28,7 +28,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IEdsApi, EdsApi>();
 
 // Add web socket service as singleton
-builder.Services.AddSingleton<ChatWebSocketService>();
+builder.Services.AddTransient<ChatWebSocketService>();
 
 var app = builder.Build();
 
