@@ -79,9 +79,6 @@ async def submit_form(
         language=language,
     )
 
-    # Expose queues to the Simulator
-    Session.set(input_queue=input_queue, output_queue=output_queue)
-
     # Cancel any running simulator and start a new one
     if simulator_task and not simulator_task.done():
         simulator_task.cancel()
@@ -90,7 +87,7 @@ async def submit_form(
         except Exception:
             pass
 
-    sim = Simulator(user_params=current_user_params, stream=True)
+    sim = Simulator(user_params=current_user_params, stream=True, input_queue=input_queue, output_queue=output_queue)
     simulator_task = asyncio.create_task(sim.run_simulation())
 
     app.state.simulator = sim
