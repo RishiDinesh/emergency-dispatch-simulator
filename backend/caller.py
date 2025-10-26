@@ -1,5 +1,13 @@
+import re
 from backend.llm import LLM
 from backend._types import Message
+
+THINK_RE = re.compile(r'(?is)<think\b[^>]*>.*?</think\s*>')
+
+def _strip_think(text: str) -> str:
+    cleaned = THINK_RE.sub('', text)
+    cleaned = re.sub(r'\n{3,}', '\n\n', cleaned).strip()
+    return cleaned
 
 class Caller(object):
 
@@ -17,6 +25,6 @@ class Caller(object):
                     content = prompt
                 )
             ],
-            model = self.llm.chat_model
+            model = self.llm.reasoning_model
         )
-        return response.content
+        return _strip_think(response.content)

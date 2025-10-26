@@ -28,7 +28,7 @@ class Environment(object):
                     content = prompt
                 )
             ],
-            model = self.llm.chat_model,
+            model = self.llm.reasoning_model,
             response_format= { "type": "json_object" }
         )
         env_params = json.loads(response.content)

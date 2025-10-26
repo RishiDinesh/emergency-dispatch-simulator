@@ -19,7 +19,7 @@ class LLM(object):
         self.tts_model = "higgs-audio-generation-Hackathon"
         self.asr_model = "higgs-audio-understanding-Hackathon"
         self.chat_model = "Qwen3-32B-non-thinking-Hackathon"
-        self.reasoning_model = "Qwen3-32B-thinking-Hackathon"
+        self.reasoning_model = "Qwen3-14B-Hackathon"
         self.omni_model = "Qwen3-Omni-30B-A3B-Thinking-Hackathon"
         self.oai_model = "gpt-4o-audio-preview"
     
