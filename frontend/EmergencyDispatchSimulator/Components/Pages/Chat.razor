@@ -25,18 +25,25 @@
             <NavigationLock OnBeforeInternalNavigation="ConfirmNavigation" ConfirmExternalNavigation />
             
             <div class="d-flex align-center justify-center" style="height: 80%; width: 80%">
-                @if (_audioPlaying)
+                @if (_lockInput)
                 {
-                    <img src="audio-wave.gif" alt="audio" style="min-height: 300px; min-width: 300px; width: 100%" />
+                    if (_audioPlaying)
+                    {
+                        <img src="audio-wave.gif" alt="audio" style="min-height: 300px; min-width: 300px; width: 100%"/>
+                    }
+                    else
+                    {
+                        <MudProgressLinear Indeterminate />
+                    }
                 }
                 else
                 {
-                    <MudDivider />
+                    <MudDivider/>
                 }
             </div>
             
             <div class="d-flex flex-row align-center gap-10">
-                <AudioRecordButton OnNewRecording="HandleOutgoingMessage" Disabled="_audioPlaying" />
+                <AudioRecordButton OnNewRecording="HandleOutgoingMessage" Disabled="_lockInput" />
                 <MudTooltip Text="End Call" Placement="Placement.Top" Arrow>
                     <MudIconButton Class="pa-4" OnClick="EndCall" Icon="@Icons.Material.Rounded.CallEnd" Color="Color.Error" Variant="Variant.Filled" Size="Size.Large"/>
                 </MudTooltip>
@@ -53,6 +60,7 @@
 @code {
 
     private bool _loading = true;
+    private bool _lockInput;
     private bool _audioPlaying;
     private bool _forceNav;
 
@@ -102,15 +110,15 @@
     
     private async Task HandleOutgoingMessage(string b64Wav)
     {
-        // TODO:
         await ChatService.SendAsync(b64Wav);
+        _lockInput = true;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task HandleIncomingMessage(string b64Wav)
     {
-        // TODO:
-        _audioPlaying = true;
         await _jsModule!.InvokeVoidAsync("playB64Wav", b64Wav);
+        _audioPlaying = true;
         await InvokeAsync(StateHasChanged);
     }
 
@@ -143,6 +151,7 @@
     [JSInvokable]
     public async Task OnAudioStopped()
     {
+        _lockInput = false;
         _audioPlaying = false;
         await InvokeAsync(StateHasChanged);
     }
