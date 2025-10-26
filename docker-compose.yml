@@ -32,6 +32,9 @@ services:
     # Optional: map the API port externally for testing
     ports:
       - "8000:8000"
+    environment:
+      - BASE_URL=${BASE_URL}
+      - API_KEY=${API_KEY}
     networks:
       - default
 
