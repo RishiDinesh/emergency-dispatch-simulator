@@ -36,6 +36,8 @@ services:
       - BASE_URL=${BASE_URL}
       - API_KEY=${BOSON_API_KEY}
       - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend/recordings:/app/backend/recordings
     networks:
       - default
 
