@@ -86,7 +86,7 @@
         RandomizeOptions(overwrite: false);
         
         var emotion = _parameters.GetParameter(ScenarioInputOptions.Emotion);
-        if (emotion is "anger" or "sad" or "fear")
+        if (emotion is "angry" or "sad" or "fear")
         {
             Random random = new();
             var tag = Convert.ToInt32(random.Next(0, 2) == 0); 
