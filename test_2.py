@@ -61,15 +61,15 @@ async def main():
     for i in range(0,3):
         with open(f"ass_msg_assault_{i}.wav", "rb") as audio_file:
             b64 = base64.b64encode(audio_file.read()).decode("utf-8")
-            log = Log(role='user',timestamp=0,audio=b64,transcription="",emotion="")
+            log = Log(role='user',timestamp=0,audio=b64,transcription="")
             caller_messages.append(log)
 
     assistant_messages = []
     
     for i in range(1,4):
-        with open(f"bad_assistant_{i}.wav", "rb") as audio_file:
+        with open(f"usermsg{i}.wav", "rb") as audio_file:
             b64 = base64.b64encode(audio_file.read()).decode("utf-8")
-            log = Log(role='assistant',timestamp=0,audio=b64,transcription="",emotion="")
+            log = Log(role='assistant',timestamp=0,audio=b64,transcription="")
             assistant_messages.append(log)
         
 
@@ -77,7 +77,7 @@ async def main():
 
     analyzer = AnalyzeCall(combined_messages)
 
-    summary = analyzer.generate_summary(message_index=0)
+    summary = analyzer.generate_summary()
 
     logger.info("TEST " + summary)
 

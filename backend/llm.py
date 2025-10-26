@@ -12,8 +12,8 @@ class LLM(object):
             self.client = openai.Client(api_key = os.getenv("OAI_API_KEY"))
         else:
             self.client = openai.Client(
-                api_key = os.getenv("BOSON_API_KEY"),
-                base_url = "https://hackathon.boson.ai/v1"  # os.getenv("BASE_URL")
+                api_key = os.getenv("API_KEY"),
+                base_url = os.getenv("BASE_URL")
             )
         # defined here for simplicity
         self.tts_model = "higgs-audio-generation-Hackathon"
