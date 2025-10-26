@@ -52,7 +52,7 @@ class LLM(object):
     def get_speech_from_chat_completion(
             self,
             messages: list[Message],
-            stream = True
+            stream = False
     ):
         
         response = self.client.chat.completions.create(
@@ -60,9 +60,11 @@ class LLM(object):
             model = self.tts_model,
             temperature = 1.0,
             modalities=["audio"],
-            audio={"format": "wav"},
             max_completion_tokens=4096,
-            stream=stream
+            top_p=0.95,
+            stream=stream,
+            stop=["<|eot_id|>", "<|end_of_text|>", "<|audio_eos|>"],
+            extra_body={"top_k": 50}
         )
         if not stream:
             yield response.choices[0].message.audio.data
