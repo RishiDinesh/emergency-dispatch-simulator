@@ -15,7 +15,7 @@ public class EdsApi : IEdsApi
     public EdsApi()
     {
         var apiUrl = Environment.GetEnvironmentVariable("BACKEND_API_URL")
-                             ?? "http://localhost:8000";
+                             ?? throw new ArgumentNullException("BACKEND_API_URL");
         Console.WriteLine($"Api url set to {apiUrl}");
         
         _http = new()
