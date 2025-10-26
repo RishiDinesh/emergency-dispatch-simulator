@@ -129,7 +129,7 @@ class Simulator(object):
                 speech_out = self.get_speech_out(text_out)
             await self.output_queue.put({"data": speech_out})
             logger.info(f"Completed simulation for input msg: {transcript_in}")
-            self.simulation_logs.extend([
+            logs = [
                 Log(
                     role = "user",
                     timestamp = user_msg_ts,
@@ -142,7 +142,8 @@ class Simulator(object):
                     audio = speech_out,
                     transcription = text_out
                 )
-            ])
+            ]
+            self.simulation_logs.extend(logs)
             self.memory.extend([
                 Message(
                     role = "user",
@@ -153,13 +154,9 @@ class Simulator(object):
                     content = text_out
                 )
             ])
-        if self.save_recordings:
-            i = 1
-            for log in self.simulation_logs:
-                if log.role == "assistant":
-                    audio_bytes = base64.b64decode(log.audio, validate=True)
-                    out_path = Path(f"backend/recordings/audio_{i}.wav")
-                    out_path.parent.mkdir(parents=True, exist_ok=True)
-                    out_path.write_bytes(audio_bytes)
-                    i += 1
+            if self.save_recordings:
+                audio_bytes = base64.b64decode(logs[1].audio, validate=True)
+                out_path = Path(f"backend/recordings/audio_{counter}.wav")
+                out_path.parent.mkdir(parents=True, exist_ok=True)
+                out_path.write_bytes(audio_bytes)
         return self.simulation_logs
