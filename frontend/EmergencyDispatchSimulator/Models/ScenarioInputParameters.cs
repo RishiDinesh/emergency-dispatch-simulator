@@ -2,16 +2,16 @@ namespace  EmergencyDispatchSimulator.Models;
 
 public record ScenarioInputParameters
 {
-    public string? IncidentCategory { get; set; }
-    public string? LocationType { get; set; }
+    public string? Incident { get; set; }
+    public string? Location { get; set; }
     public string? Gender { get; set; }
     public string? Language { get; set; }
     public string? Emotion { get; set; }
 
     public string? GetParameter(string name) => name switch
     {
-        ScenarioInputOptions.GroupCategory => IncidentCategory,
-        ScenarioInputOptions.GroupLocation => LocationType,
+        ScenarioInputOptions.GroupCategory => Incident,
+        ScenarioInputOptions.GroupLocation => Location,
         ScenarioInputOptions.GroupGender => Gender,
         ScenarioInputOptions.GroupLanguage => Language,
         ScenarioInputOptions.Emotion => Emotion,
@@ -23,10 +23,10 @@ public record ScenarioInputParameters
         switch (name)
         {
             case ScenarioInputOptions.GroupCategory:
-                IncidentCategory = value;
+                Incident = value;
                 break;
             case ScenarioInputOptions.GroupLocation:
-                LocationType = value;
+                Location = value;
                 break;
             case ScenarioInputOptions.GroupGender:
                 Gender = value;

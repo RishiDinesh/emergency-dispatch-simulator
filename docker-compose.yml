@@ -1,0 +1,44 @@
+
+version: '3.8'
+
+services:
+  # --- 1. The Blazor Server Application (User-facing frontend) ---
+  frontend:
+    container_name: frontend
+    build:
+      # The context is the directory containing the source code (BlazorServerApp folder)
+      # This is the starting point for COPY commands in the Dockerfile.
+      context: ./frontend
+      # The explicit path to the Dockerfile within that context
+      dockerfile: EmergencyDispatchSimulator/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_API_URL=http://backend:8000
+      - BACKEND_WS_URL=ws://backend:8000/ws/stream
+    networks:
+      - default
+
+  # --- 2. The FastAPI Application (Backend API) ---
+  backend:
+    container_name: backend
+    build:
+      # The context is the root directory
+      context: .
+      # The explicit path to the Dockerfile (assuming you named it Dockerfile.fastapi)
+      dockerfile: Dockerfile.backend
+    # Optional: map the API port externally for testing
+    ports:
+      - "8000:8000"
+    environment:
+      - BASE_URL=${BASE_URL}
+      - API_KEY=${API_KEY}
+    networks:
+      - default
+
+# Define a shared network
+networks:
+  default:
+    driver: bridge
