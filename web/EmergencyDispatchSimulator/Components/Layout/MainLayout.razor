@@ -13,15 +13,20 @@
         <MudNavMenu>
             @if (_drawerOpen)
             {
-                <MudNavLink Class="mb-2" OnClick="_ => { _drawerOpen = false; }" Icon="@Icons.Material.Rounded.MenuOpen"><b>EDS</b></MudNavLink>
-                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
+                <MudNavLink Class="mb-4" OnClick="_ => { _drawerOpen = false; }" Icon="@Icons.Material.Rounded.MenuOpen"><b>EDS</b></MudNavLink>
+                <MudNavLink Class="mb-2" Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
+                <MudNavLink Class="mb-2" Href="/chat" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VoiceChat" IconColor="Color.Primary">Chat</MudNavLink>
             }
             else
             {
-                <MudNavLink Class="mb-2" OnClick="_ => { _drawerOpen = true; }" Icon="@Icons.Material.Rounded.Menu" />
+                <MudNavLink Class="mb-4" OnClick="_ => { _drawerOpen = true; }" Icon="@Icons.Material.Rounded.Menu" />
                 
                 <MudTooltip Text="New Simulation" Placement="Placement.End" Arrow>
-                    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
+                    <MudNavLink Class="mb-2" Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
+                </MudTooltip>
+                
+                <MudTooltip Text="Chat" Placement="Placement.End" Arrow>
+                    <MudNavLink Class="mb-2" Href="/chat" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VoiceChat" IconColor="Color.Primary">Call</MudNavLink>
                 </MudTooltip>
             }
         </MudNavMenu>   
