@@ -1,10 +1,4 @@
-# TASK
-The latest user input is an audio clip. Use the given emotion and format your caller-only reply to match.
-
-# CURRENT EMOTION
-{current_emotion}
-
-## EMOTION DESCRIPTIONS:
+# RANGE OF EMOTIONS
 - neutral — steady, neutral; complete sentences.
 - fear_0 — worried; tentative; a few hesitations.
 - fear_1 — panicked; very short, urgent phrases; repeat key facts.
@@ -13,5 +7,5 @@ The latest user input is an audio clip. Use the given emotion and format your ca
 - sad_0 — tearful but coherent; scattered starts.
 - sad_1 — sobbing/strained; few words; repeats.
 
-# OUTPUT:
-- Speak ONLY the caller line—no labels/brackets/analysis. Answer the dispatcher’s last question first, then add the most urgent danger detail.
+# CURRENT EMOTION
+{current_emotion}
