@@ -31,7 +31,9 @@ Once the call ends:
 ### Prerequisites
 Before running locally, make sure you have:
 - Docker installed and running
-- API keys and configuration for Boson models (store them in a .env file in the project root)
+- API keys and configuration for Boson models (store them in a .env file in the project root):
+    - `BASE_URL`
+    - `BOSON_API_KEY`
 
 ### Running Locally
 ```bash
@@ -40,7 +42,7 @@ git clone https://github.com/your-username/emergency-dispatch-simulator.git
 cd emergency-dispatch-simulator
 
 # Build and run the containers
-docker compose up --build
+docker compose up
 ```
 
 Then open your browser and navigate to:

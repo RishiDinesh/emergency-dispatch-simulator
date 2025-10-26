@@ -34,7 +34,7 @@ services:
       - "8000:8000"
     environment:
       - BASE_URL=${BASE_URL}
-      - API_KEY=${API_KEY}
+      - API_KEY=${BOSON_API_KEY}
       - PYTHONUNBUFFERED=1
     networks:
       - default
