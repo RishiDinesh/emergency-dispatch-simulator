@@ -1,14 +1,7 @@
-911 Operator Audio Evaluation Guidelines
---------------------------------------------------
-
-This guide provides evaluation criteria that can be judged solely from the audio of a 911 call. 
-Supervisors can use it to assess tone, communication, professionalism, and call control without 
-requiring access to visual or system data.
 
 --------------------------------------------------
 1. Greeting and Opening
 --------------------------------------------------
-- Answered promptly and used an appropriate greeting (e.g., "911, what is your emergency?").
 - Established control and professionalism from the start of the call.
 - Used clear diction, steady tone, and audible confidence.
 
@@ -32,7 +25,6 @@ requiring access to visual or system data.
 4. Questioning and Information Gathering
 --------------------------------------------------
 - Used logical and structured questioning (who, what, where, when, why, how).
-- Asked open-ended questions first, then more specific follow-ups as needed.
 - Avoided redundant or irrelevant questions that delay response.
 - Demonstrated active listening through relevant follow-up questions.
 
@@ -61,7 +53,7 @@ requiring access to visual or system data.
 - Maintained professionalism until the end of the call.
 
 --------------------------------------------------
-8. Evaluation Criteria Summary (Rate 1–5)
+8. Evaluation Criteria Summary
 --------------------------------------------------
 - Tone: Calm, professional, empathetic.
 - Clarity: Speech intelligibility, pacing, and diction.

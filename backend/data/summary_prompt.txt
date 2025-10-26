@@ -5,5 +5,4 @@ Did I deal with them in a proper tone and manner?
 Did I ask the right questions? 
 Did I dispatch the correct service (if needed)? 
 Did I do all this in a timely manner? 
-Give me an overall score out of 10 on how well I performed. 
-If I did not receive a 10/10, tell me how I could improve.
+Use the following as a guideline for judging me. 
