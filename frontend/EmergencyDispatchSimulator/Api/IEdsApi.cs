@@ -1,16 +1,24 @@
+using System.Text.Json;
 using EmergencyDispatchSimulator.Models;
 
 namespace EmergencyDispatchSimulator.Api;
 
 public interface IEdsApi
 {
+    ChatLog? ChatLog { get; set; }
+    ChatSummary? ChatSummary { get; set; }
     Task CreateDispatchSimulation(ScenarioInputParameters parameters);
+    Task<ChatLog> GetChatLogAsync();
+    Task<ChatSummary> GetChatSummaryAsync();
 }
 
 public class EdsApi : IEdsApi
 {
 
     private readonly HttpClient _http;
+    
+    public ChatLog? ChatLog { get; set; }
+    public ChatSummary? ChatSummary { get; set; }
     
     public EdsApi()
     {
@@ -37,5 +45,30 @@ public class EdsApi : IEdsApi
         var response = await _http.PostAsync("/submit_form", formContent);
         Console.WriteLine($"CreateDispatchSimulation returned response {response.StatusCode}");
         response.EnsureSuccessStatusCode();
+    }
+
+
+    public async Task<ChatLog> GetChatLogAsync()
+    {
+        var response = await _http.GetAsync("/get_conversation");
+        response.EnsureSuccessStatusCode();
+        
+        var dataStr = await response.Content.ReadAsStringAsync();
+        var chatLog = JsonSerializer.Deserialize<ChatLog>(dataStr);
+
+        ChatLog = chatLog;
+        return chatLog;
+    }
+
+    public async Task<ChatSummary> GetChatSummaryAsync()
+    {
+        var response = await _http.GetAsync("/analyze_conversation");
+        response.EnsureSuccessStatusCode();
+        
+        var dataStr = await response.Content.ReadAsStringAsync();
+        var chatSummary = JsonSerializer.Deserialize<ChatSummary>(dataStr);
+
+        ChatSummary = chatSummary;
+        return chatSummary;
     }
 }

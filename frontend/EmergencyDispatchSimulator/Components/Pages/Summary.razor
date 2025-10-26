@@ -1,14 +1,111 @@
 @page "/summary"
 
+@implements IAsyncDisposable
+
+@inject IJSRuntime JS
+@inject Api.IEdsApi EdsApi
 
 
+<MudContainer MaxWidth="MaxWidth.Medium">
+    @if (EdsApi.ChatSummary is null)
+    {
+        <MudAlert Severity="Severity.Error">Could not find chat summary!</MudAlert>
+    }
+    else
+    {
+        <MudExpansionPanels>
+            <MudExpansionPanel Expanded>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Info" class="mr-3"></MudIcon>
+                        <MudText><strong>Performance Summary</strong></MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    @foreach (var summaryItem in EdsApi.ChatSummary.summary.Split('*'))
+                    {
+                        <MudText Typo="Typo.body1">@summaryItem</MudText>
+                    }
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    }
+    
+    @if (EdsApi.ChatLog is null)
+    {
+        <MudAlert Severity="Severity.Error">Could not find chat history!</MudAlert>
+    }
+    else
+    {
+        foreach (var message in EdsApi.ChatLog.data)
+        {
+            var isUser = message.role == "user";
+            var position = isUser ? ChatBubblePosition.End : ChatBubblePosition.Start;
+            var color = isUser ? Color.Default : Color.Info;
+            var audioColor = _playingTimestamp is not null && _playingTimestamp.Equals(message.timestamp) ? Color.Primary : Color.Default;
+            <MudChat Class="my-2" Color="color" Variant="Variant.Filled" ChatPosition="position">
+                <MudChatBubble>
+                    <MudText Typo="Typo.body1">@message.transcription</MudText>
+                </MudChatBubble>
+                <MudChatFooter>
+                    <MudIconButton OnClick="_ => PlayAudio(message)" Icon="@Icons.Material.Rounded.VolumeUp" Color="audioColor" Size="Size.Small"/>
+                </MudChatFooter>
+            </MudChat>
+        }
+    }
+</MudContainer>
 
 
 
 
 @code {
 
+    private DotNetObjectReference<Summary>? _dotNetRef;
+    private IJSObjectReference? _jsModule;
+    private bool _jsInitialized;
+
+    private double? _playingTimestamp;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_jsInitialized)
+        {
+            _jsInitialized = true;
+            try
+            {
+                _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Summary.razor.js");
+                _dotNetRef = DotNetObjectReference.Create(this);
+                await _jsModule.InvokeVoidAsync("initialize", _dotNetRef);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error Rendering Summary JS: {e.Message}");
+            }
+        }
+    }
+
+
+    private async Task PlayAudio(ChatLogItem message)
+    {
+        _playingTimestamp = message.timestamp;
+        await _jsModule!.InvokeVoidAsync("playB64Wav", message.audio);
+        await InvokeAsync(StateHasChanged);
+    }
     
     
+    [JSInvokable]
+    public async Task OnAudioStopped()
+    {
+        _playingTimestamp = null;
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    
+    public async ValueTask DisposeAsync()
+    {
+        _dotNetRef?.Dispose();
+        if (_jsModule is not null)
+            await _jsModule.DisposeAsync();
+    }
 
 }
