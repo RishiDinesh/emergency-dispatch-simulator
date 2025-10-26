@@ -1,2 +1,0 @@
-# GOAL
-Transcribe the given user audio. Output only the transcription.
