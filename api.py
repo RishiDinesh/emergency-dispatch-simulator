@@ -43,6 +43,19 @@ async def startup_event():
 async def read_root():
     return {"message": "Hello World"}
 
+@app.get("/get_conversation")
+async def analyze():
+    sim = getattr(app.state, "simulator", None)
+    if sim is None:
+        raise HTTPException(status_code=400, detail="Simulator not started.")
+
+    logs = getattr(sim, "simulation_logs", None)
+    if not logs:
+        raise HTTPException(status_code=400, detail="No simulation logs yet.")
+
+    logs_snapshot = list(logs)
+    return {"data": logs_snapshot}
+
 @app.get("/analyze_conversation")
 async def analyze():
     sim = getattr(app.state, "simulator", None)
@@ -108,15 +121,7 @@ async def submit_form(
 
 
 def _extract_b64_from_text(t: str) -> Optional[str]:
-    """
-    Accepts:
-      - raw base64
-      - data URLs like 'data:audio/wav;base64,<b64>'
-      - JSON like '{"data":"<b64>"}'
-    Returns validated base64 string, or None if invalid.
-    """
     s = t.strip()
-
     # JSON wrapper
     if s.startswith("{"):
         try:
