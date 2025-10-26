@@ -13,7 +13,7 @@ class LLM(object):
         else:
             self.client = openai.Client(
                 api_key = os.getenv("API_KEY"),
-                base_url = "https://hackathon.boson.ai/v1"  # os.getenv("BASE_URL")
+                base_url = os.getenv("BASE_URL")
             )
         # defined here for simplicity
         self.tts_model = "higgs-audio-generation-Hackathon"

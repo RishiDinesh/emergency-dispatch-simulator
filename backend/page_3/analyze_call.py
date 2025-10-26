@@ -26,7 +26,7 @@ class AnalyzeCall(object):
         for i in range(message_index+1):
             messages.append(
                 Message(
-                    role = "user", 
+                    role = "user",
                     content = [
                         MessageContent(
                             type = "input_audio",
