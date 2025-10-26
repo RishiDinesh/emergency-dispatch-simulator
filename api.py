@@ -6,6 +6,8 @@ import asyncio
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+import binascii
+import base64
 
 
 from fastapi import FastAPI, Form, WebSocket, WebSocketDisconnect,  HTTPException, Query
@@ -93,7 +95,7 @@ async def submit_form(
         except Exception:
             pass
 
-    sim = Simulator(user_params=current_user_params, stream=True, input_queue=input_queue, output_queue=output_queue)
+    sim = Simulator(user_params=current_user_params, stream=False, input_queue=input_queue, output_queue=output_queue)
     simulator_task = asyncio.create_task(sim.run_simulation())
 
     app.state.simulator = sim
@@ -181,12 +183,19 @@ async def ws_stream(ws: WebSocket):
         try:
             while not stop.is_set():
                 item = await output_queue.get()
-                if item is None:
+                if not item:
                     continue
+
                 b64 = item.get("data")
                 if not b64:
                     continue
-                await ws.send_text(b64)
+                try:
+                    chunk_bytes = base64.b64decode(b64, validate=True)
+                except (binascii.Error, ValueError):
+                    continue
+
+                # send a binary WS frame (byte array)
+                await ws.send_bytes(chunk_bytes)
         except WebSocketDisconnect:
             stop.set()
         except Exception:
