@@ -12,8 +12,13 @@ from fastapi import FastAPI, Form, WebSocket, WebSocketDisconnect,  HTTPExceptio
 
 from backend.simulator import Simulator
 from backend.page_3.analyze_call import AnalyzeCall
-from backend.session import Session
 from backend._types import UserParams
+
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 
 app = FastAPI()
 
