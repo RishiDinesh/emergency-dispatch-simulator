@@ -75,3 +75,6 @@ class Log:
     timestamp: float
     audio: str
     transcription: str
+
+    def to_dict(self):
+        return asdict(self)
