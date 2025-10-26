@@ -2,6 +2,8 @@ import time
 import json
 import asyncio
 import logging
+import base64
+from pathlib import Path
 from backend.llm import LLM
 from backend.environment import Environment
 from backend.caller import Caller
@@ -41,6 +43,7 @@ class Simulator(object):
         self.simulation_logs = []
         self.input_queue = input_queue
         self.output_queue = output_queue
+        self.save_recordings = True
     
     def set_system_prompt(self, caller_role: str):
         with open("backend/prompts/init_simulation.txt", "r") as f:
@@ -104,20 +107,26 @@ class Simulator(object):
         data = next(generator)
         return data
     
-    async def run_simulation(self):
+    async def run_simulation(self, load_from_recordings = False):
+        counter = 0
         while True:
-            
             payload = await self.input_queue.get()
             if payload is None:
                 logger.info("Ending simulation loop")
                 break
+            counter += 1
             user_msg_ts = time.time()
             speech_in = payload["data"]
             logger.info("Received speech input from user")
 
             transcript_in = await self.transcribe_speech_in(speech_in)
             text_out = await self.get_text_out(speech_in)
-            speech_out = self.get_speech_out(text_out)
+            if load_from_recordings:
+                with open(f"backend/recordings/audio_{counter}.wav", "rb") as f:
+                    speech_out = base64.b64encode(f.read()).decode("utf-8")
+                    time.sleep(3)
+            else:
+                speech_out = self.get_speech_out(text_out)
             await self.output_queue.put({"data": speech_out})
             logger.info(f"Completed simulation for input msg: {transcript_in}")
             self.simulation_logs.extend([
@@ -144,4 +153,13 @@ class Simulator(object):
                     content = text_out
                 )
             ])
+        if self.save_recordings:
+            i = 1
+            for log in self.simulation_logs:
+                if log.role == "assistant":
+                    audio_bytes = base64.b64decode(log.audio, validate=True)
+                    out_path = Path(f"backend/recordings/audio_{i}.wav")
+                    out_path.parent.mkdir(parents=True, exist_ok=True)
+                    out_path.write_bytes(audio_bytes)
+                    i += 1
         return self.simulation_logs
