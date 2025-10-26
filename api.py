@@ -7,9 +7,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, Form, WebSocket, WebSocketDisconnect
+
+from fastapi import FastAPI, Form, WebSocket, WebSocketDisconnect,  HTTPException, Query
 
 from backend.simulator import Simulator
+from backend.page_3.analyze_call import AnalyzeCall
 from backend.session import Session
 from backend._types import UserParams
 
@@ -25,9 +27,35 @@ simulator_task: Optional[asyncio.Task] = None
 current_user_params: Optional[UserParams] = None
 
 
+@app.on_event("startup")
+async def startup_event():
+    app.state.simulator = None
+    app.state.simulator_task = None
+
 @app.get("/")
 async def read_root():
     return {"message": "Hello World"}
+
+@app.get("/analyze_conversation")
+async def analyze():
+    sim = getattr(app.state, "simulator", None)
+    if sim is None:
+        raise HTTPException(status_code=400, detail="Simulator not started.")
+
+    logs = getattr(sim, "simulation_logs", None)
+    if not logs:
+        raise HTTPException(status_code=400, detail="No simulation logs yet.")
+
+    logs_snapshot = list(logs)
+
+    ac = AnalyzeCall(call_logs=logs_snapshot)
+    try:
+        summary = ac.generate_summary()
+    except IndexError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {"summary": summary}
+
 
 
 @app.post("/submit_form")
@@ -64,6 +92,9 @@ async def submit_form(
 
     sim = Simulator(user_params=current_user_params, stream=True)
     simulator_task = asyncio.create_task(sim.run_simulation())
+
+    app.state.simulator = sim
+    app.state.simulator_task = simulator_task
 
     return {
         "message": "Simulator started successfully.",
