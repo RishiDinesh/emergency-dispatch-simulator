@@ -36,5 +36,6 @@ public class EdsApi : IEdsApi
         
         var response = await _http.PostAsync("/submit_form", formContent);
         Console.WriteLine($"CreateDispatchSimulation returned response {response.StatusCode}");
+        response.EnsureSuccessStatusCode();
     }
 }

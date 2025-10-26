@@ -3,6 +3,7 @@
 @inject IScrollManager ScrollManager
 @inject NavigationManager Navigation
 @inject Api.IEdsApi EdsApi
+@inject ISnackbar Snackbar
 
 <PageTitle>EDS - Home</PageTitle>
 
@@ -91,14 +92,21 @@
             var tag = Convert.ToInt32(random.Next(0, 2) == 0); 
             emotion += $"_{tag}";
         }
-        _parameters.SetParameter(ScenarioInputOptions.Emotion, emotion!);
-        
-        // TODO: POST request to API
-        await EdsApi.CreateDispatchSimulation(_parameters);
-        
-        _submitLoading = false;
-        
-        Navigation.NavigateTo("/chat");
+        var parameters = _parameters with { Emotion = emotion };
+
+        try
+        {
+            await EdsApi.CreateDispatchSimulation(parameters);
+            Navigation.NavigateTo("/chat");
+        }
+        catch
+        {
+            Snackbar.Add("Something went wrong when creating simulation...", Severity.Error);
+        }
+        finally
+        {
+            _submitLoading = false;
+        }
     }
 
 }

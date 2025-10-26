@@ -62,14 +62,23 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Subscribe to the service's event to receive messages
-        ChatService.MessageReceived += HandleIncomingMessage;
-        ChatService.StatusChanged += Console.WriteLine;
-        // Attempt connection
-        await ChatService.ConnectAsync();
+        try
+        {
+            // Subscribe to the service's event to receive messages
+            ChatService.MessageReceived += HandleIncomingMessage;
+            ChatService.StatusChanged += Console.WriteLine;
+            // Attempt connection
+            await ChatService.ConnectAsync();
+        }
+        catch
+        {
 
-        _loading = false;
-        StateHasChanged();
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
