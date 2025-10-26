@@ -90,7 +90,7 @@
         {
             Random random = new();
             var tag = Convert.ToInt32(random.Next(0, 2) == 0); 
-            emotion += $"_{tag}";
+            emotion += $"_1";
         }
         var parameters = _parameters with { Emotion = emotion };
 
