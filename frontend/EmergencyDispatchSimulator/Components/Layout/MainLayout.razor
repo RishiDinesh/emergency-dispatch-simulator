@@ -1,0 +1,130 @@
+﻿@inherits LayoutComponentBase
+
+@inject ILocalStorageService LocalStorage
+
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChange" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+
+<MudLayout>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Variant="DrawerVariant.Mini" MiniWidth="88px" Class="py-2 px-4 border-r mud-border-surface border-solid">
+        <MudNavMenu>
+            @if (_drawerOpen)
+            {
+                <MudNavLink Class="mb-4" OnClick="_ => { _drawerOpen = false; }" Icon="@Icons.Material.Rounded.MenuOpen"><b>EDS</b></MudNavLink>
+                <MudNavLink Class="mb-2" Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
+                <MudNavLink Class="mb-2" Href="/chat" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VoiceChat" IconColor="Color.Primary">Chat</MudNavLink>
+            }
+            else
+            {
+                <MudNavLink Class="mb-4" OnClick="_ => { _drawerOpen = true; }" Icon="@Icons.Material.Rounded.Menu" />
+                
+                <MudTooltip Text="New Simulation" Placement="Placement.End" Arrow>
+                    <MudNavLink Class="mb-2" Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AddCircle" IconColor="Color.Primary">New Simulation</MudNavLink>
+                </MudTooltip>
+                
+                <MudTooltip Text="Chat" Placement="Placement.End" Arrow>
+                    <MudNavLink Class="mb-2" Href="/chat" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VoiceChat" IconColor="Color.Primary">Call</MudNavLink>
+                </MudTooltip>
+            }
+        </MudNavMenu>   
+        
+        <MudSpacer />
+        
+        <MudNavMenu>
+            @if (_drawerOpen)
+            {
+                <div class="mud-full-width d-flex justify-center">
+                    <MudButtonGroup OverrideStyles="false">
+                        <MudIconButton OnClick="ToggleDarkMode" Icon="@DarkModeIcon" Color="Color.Inherit" />
+                        <MudIconButton Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+                        <MudIconButton Href="https://www.boson.ai/" Target="_blank" Icon="@CustomIcons.Boson" Color="Color.Inherit" />
+                    </MudButtonGroup>
+                </div>
+            }
+            else
+            {
+                <MudTooltip Text="Toggle dark mode" Placement="Placement.End" Arrow>
+                    <MudNavLink OnClick="ToggleDarkMode" Icon="@DarkModeIcon" IconColor="Color.Inherit" />
+                </MudTooltip>
+                <MudTooltip Text="Source repo" Placement="Placement.End" Arrow>
+                    <MudNavLink Href="https://github.com/RishiDinesh/emergency-dispatch-simulator" Target="_blank" Match="NavLinkMatch.All" Icon="@Icons.Custom.Brands.GitHub" IconColor="Color.Inherit" />
+                </MudTooltip>
+                <MudTooltip Text="Boson AI" Placement="Placement.End" Arrow>
+                    <MudNavLink Href="https://www.boson.ai/" Target="_blank" Match="NavLinkMatch.All" Icon="@CustomIcons.Boson" IconColor="Color.Inherit" />
+                </MudTooltip>
+            }
+        </MudNavMenu>
+        
+    </MudDrawer>
+    <MudMainContent>
+        <div class="px-4 pb-4">
+            @Body
+        </div>
+    </MudMainContent>
+</MudLayout>
+
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+
+    private const string _darkModeLocalKey = "IsDarkMode";
+    private bool _isDarkMode;
+    private bool _drawerOpen;
+
+    private string DarkModeIcon => _isDarkMode ? Icons.Material.Rounded.DarkMode : Icons.Material.Rounded.LightMode;
+
+    private MudTheme _theme = new()
+    {
+        PaletteDark = new()
+        {
+            Surface = "#191919",
+            TextPrimary = "#EBEBEB",
+            Background = "#191919",
+            DrawerBackground = "#191919",
+            DrawerText = "#E0E0E0",
+            DrawerIcon = "#E0E0E0",
+            AppbarBackground = "#111111",
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DefaultBorderRadius = "10px",
+            AppbarHeight = "45px",
+        }
+    };
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+        
+        var localDarkMode = await LocalStorage.GetItemAsync<bool>(_darkModeLocalKey);
+        if (localDarkMode != _isDarkMode)
+        {
+            _isDarkMode = localDarkMode;
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task OnDarkModeChange(bool isDarkMode)
+    {
+        if (_isDarkMode == isDarkMode)
+            return;
+        
+        _isDarkMode = isDarkMode;
+        await LocalStorage.SetItemAsync(_darkModeLocalKey, _isDarkMode);
+    }
+
+    private Task ToggleDarkMode() => OnDarkModeChange(!_isDarkMode);
+
+
+}

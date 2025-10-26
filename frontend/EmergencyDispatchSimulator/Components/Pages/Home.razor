@@ -1,0 +1,104 @@
+﻿@page "/"
+
+@inject IScrollManager ScrollManager
+@inject NavigationManager Navigation
+@inject Api.IEdsApi EdsApi
+
+<PageTitle>EDS - Home</PageTitle>
+
+<MudContainer Class="pb-2" MaxWidth="MaxWidth.Small">
+    <MudText Typo="Typo.h4">Create your own emergency dispatch simulation</MudText>
+    <MudText Class="mb-6" Typo="Typo.subtitle2">Only select what you want controlled. Leave blank for a randomized selection.</MudText>
+
+    <MudForm Model="_parameters" Spacing="3">
+        @foreach (var (optionGroupName, options) in _availableOptions)
+        {
+            <MudSelect Id="@optionGroupName" T="string" Value="_parameters.GetParameter(optionGroupName)" ValueChanged="x => _parameters.SetParameter(optionGroupName, x)" Label="@options.Label" HelperText="@options.Description" Clearable>
+                @foreach (var option in options.Options.OrderBy(x => x != "English").ThenBy(x => x))
+                {
+                    <MudSelectItem Value="@option">@option.Replace('_', ' ')</MudSelectItem>
+                }
+            </MudSelect>
+        }
+        
+        <div class="mud-full-width d-flex flex-row align-center justify-end gap-3 flex-wrap">
+            <MudButton OnClick="_ => RandomizeOptions(overwrite: true)" Color="Color.Inherit" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.Loop" Disabled="_submitLoading">Randomize</MudButton>
+            <MudButton OnClick="OnFormSubmit" Color="Color.Primary" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.KeyboardArrowRight" Disabled="_submitLoading">Create Simulation</MudButton>
+        </div>
+    </MudForm>
+</MudContainer>
+
+@* Disable this for now *@
+@if (false)
+{
+    <MudDrawer Class="docs-page-content-navigation-drawer" Open Breakpoint="Breakpoint.Lg" Anchor="Anchor.End" ClipMode="DrawerClipMode.Always" Elevation="0" Color="Color.Transparent">
+        <div class="d-flex flex-column">
+            <MudNavMenu Class="pl-4 mb-4">
+                <MudText Typo="Typo.subtitle1" Class="title" GutterBottom="true">
+                    Contents
+                </MudText>
+
+                @foreach (var (optionGroupName, options) in _availableOptions)
+                {
+                    <MudNavLink Match="NavLinkMatch.All" OnClick="_ => OnNavLinkClick(optionGroupName)">
+                        @options.Label
+                    </MudNavLink>
+                }
+            </MudNavMenu>
+            
+            <MudButton Class="mx-4" OnClick="OnFormSubmit" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Create Simulation</MudButton>
+        </div>
+    </MudDrawer>
+}
+
+
+@code {
+
+    private Dictionary<string, ScenarioInputOption> _availableOptions = ScenarioInputOptions.GetAvailableOptions();
+    private ScenarioInputParameters _parameters = new();
+
+    private bool _submitLoading;
+
+    private ValueTask OnNavLinkClick(string componentId) => ScrollManager.ScrollIntoViewAsync($"#{componentId}", ScrollBehavior.Smooth);
+
+    private void RandomizeOptions(bool overwrite)
+    {
+        Random random = new();
+        foreach (var (optionGroupName, options) in _availableOptions)
+        {
+            // only set parameter if overwrite is true, or parameter is empty
+            if (!overwrite && !string.IsNullOrEmpty(_parameters.GetParameter(optionGroupName)))
+                continue;
+            
+            var choice = options.Options.OrderBy(x => random.NextDouble()).First();
+            _parameters.SetParameter(optionGroupName, choice);
+        }
+    }
+    
+
+    private async Task OnFormSubmit()
+    {
+        _submitLoading = true;
+        await InvokeAsync(StateHasChanged);
+
+        // make sure each field is populated
+        RandomizeOptions(overwrite: false);
+        
+        var emotion = _parameters.GetParameter(ScenarioInputOptions.Emotion);
+        if (emotion is "anger" or "sad" or "fear")
+        {
+            Random random = new();
+            var tag = Convert.ToInt32(random.Next(0, 2) == 0); 
+            emotion += $"_{tag}";
+        }
+        _parameters.SetParameter(ScenarioInputOptions.Emotion, emotion!);
+        
+        // TODO: POST request to API
+        await EdsApi.CreateDispatchSimulation(_parameters);
+        
+        _submitLoading = false;
+        
+        Navigation.NavigateTo("/chat");
+    }
+
+}
