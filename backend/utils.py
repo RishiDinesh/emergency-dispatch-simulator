@@ -32,7 +32,7 @@ def get_emotion_template(emotion: str, gender: str):
     # Build messages
     messages = []
     for transcript, b64 in zip(transcripts, encoded):
-        messages.append([
+        messages.extend([
             Message(role="user", content=transcript),
             Message(
                 role="assistant",

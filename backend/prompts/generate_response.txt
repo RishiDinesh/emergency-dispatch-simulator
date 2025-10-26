@@ -19,7 +19,7 @@ Set EMOTION to one of:
 
 # OUTPUT:
 - Speak ONLY the caller line—no labels/brackets/analysis. Answer the dispatcher’s last question first, then add the most urgent danger detail.
-- Strictly output JSON, ensure it is parseable.
+- Strictly JSON, must be parseable. Output only JSON and nothing else (not even ```)
 {{{{
     "updated_emotion": <updated emotion>,
     "text_response": <the next response>
