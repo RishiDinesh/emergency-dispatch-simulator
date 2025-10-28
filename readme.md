@@ -6,6 +6,9 @@ This system uses the [Higgs audio understanding and generation models](https://w
 
 ![alt text](./assets/image2.png)
 
+## Demo Video
+🎥 [Watch the demo on Loom](https://www.loom.com/share/2bdf0ff746214a38a0281b41a148f46a)
+
 ## Workflow
 ![alt text](./assets/image1.png)
 
