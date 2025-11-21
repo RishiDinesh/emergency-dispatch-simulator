@@ -42,7 +42,7 @@ class Simulator(object):
         self.simulation_logs = []
         self.input_queue = input_queue
         self.output_queue = output_queue
-        self.save_cache = True
+        self.save_cache = False
         self.folder_name = user_params.generate_id()
     
     def set_system_prompt(self, caller_role: str):
@@ -107,7 +107,7 @@ class Simulator(object):
         data = next(generator)
         return data
     
-    async def run_simulation(self, load_from_cache = True):
+    async def run_simulation(self, load_from_cache = False):
         counter = 0
         transcript_in, text_out, speech_out = None, None, None
         while True:
