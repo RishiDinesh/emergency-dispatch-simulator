@@ -5,7 +5,7 @@ public record ScenarioInputParameters
     public string? Incident { get; set; }
     public string? Location { get; set; }
     public string? Gender { get; set; }
-    public string? Language { get; set; }
+    public string? Language { get; set; } = "English";
     public string? Emotion { get; set; }
 
     public string? GetParameter(string name) => name switch
