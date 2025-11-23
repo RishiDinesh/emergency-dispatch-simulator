@@ -108,6 +108,8 @@ async def submit_form(
         except Exception:
             pass
 
+    _empty_queue(input_queue)
+    _empty_queue(output_queue)
     sim = Simulator(user_params=current_user_params, stream=False, input_queue=input_queue, output_queue=output_queue)
     simulator_task = asyncio.create_task(sim.run_simulation())
 
@@ -142,6 +144,14 @@ def _extract_b64_from_text(t: str) -> Optional[str]:
         return s
     except Exception:
         return None
+
+
+def _empty_queue(q: asyncio.Queue):
+  while not q.empty():
+    # Depending on your program, you may want to
+    # catch QueueEmpty
+    q.get_nowait()
+    q.task_done()
 
 
 @app.websocket("/ws/stream")
