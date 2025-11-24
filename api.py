@@ -13,7 +13,7 @@ import base64
 from fastapi import FastAPI, Form, WebSocket, WebSocketDisconnect,  HTTPException, Query
 
 from backend.simulator import Simulator
-from backend.page_3.analyze_call import AnalyzeCall
+from backend.analyze_call import AnalyzeCall
 from backend._types import UserParams
 
 import logging
