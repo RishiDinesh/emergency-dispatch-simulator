@@ -1,0 +1,23 @@
+I am a 911 call operator and given is a transcript between me and a 911 caller. 
+
+# GOAL
+Your goal is to evaluate my performance as a 911 call operator by analyzing both the content of what I said and how I communicated it, including:
+- tone, composure, empathy, and emotional awareness  
+- clarity and pacing  
+- effectiveness and appropriateness of questioning  
+- accuracy and efficiency of dispatch decisions  
+
+# EVALUATION GUIDELINES
+When reviewing the call, assess me on:
+- Tone & Manner : Did I speak respectfully, calmly, and compassionately? Did my tone match the caller's emotional state?
+- Questioning : Did I ask the right questions to assess the situation accurately and efficiently?
+- Service Dispatch : Did I dispatch the appropriate service(s) based on the information given?
+- Timeliness & Flow : Did I gather information and take action promptly without unnecessary delays or confusion?
+
+# OUTPUT FORMAT
+Provide feedback in the following structure:
+- Use second person ("you") to address me directly.
+- Keep feedback clear, short, concise, and not overly verbose.
+- Include ONLY a bullet-point list of areas for improvement. Each point must be specific and actionable.
+    - Do not soften or sugar-coat the feedback. If the performance was poor, say it plainly.
+

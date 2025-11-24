@@ -7,49 +7,40 @@ class AnalyzeCall(object):
         self.call_logs = call_logs
 
 
-    def generate_summary(self, message_index=-1):
-        if message_index == -1:
-            output_questions_path = "backend/data/summary_prompt.txt"
-        else: 
-            output_questions_path = "backend/data/individual_summary_prompt.txt"
-        
-        with open(output_questions_path, "r") as f:
-            output_questions = f.read()
+    def generate_summary(self):
 
+        with open( "backend/prompts/summary_prompt.txt", "r") as f:
+            user_prompt = f.read()
 
-        system_content = "You are a 911 call trainer evaluating operator performance. Here is a conversation."
-
-        # guidelines_path = "backend/data/operator_evaluation_guidelines.txt"
-        
-        # with open(guidelines_path, "r") as f:
-        #     guidelines = f.read()
-
-        followup_questions = "Organize your feedback into three bulletpoints for things I did well and three bulletpoints for things I did poorly. Focus on how I said what I said as well as what I said. Don't be too verbose."
-
-        if message_index == -1:
-            message_index = len(self.call_logs) - 1
-
-        messages = [Message(role = "system", content = system_content)]
-        for i in range(message_index+1):
-            messages.append(
-                Message(
-                    role = "user",
-                    content = [
-                        MessageContent(
-                            type = "input_audio",
-                            input_audio = InputAudio(
-                                data = self.call_logs[i].audio,
-                                format = 'wav',
+        system_prompt = "You are a 911 call trainer evaluating operator performance. You will be given a conversation by the user, between them (911 dispatcher) and a 911 caller."
+        messages = [Message(role = "system", content = system_prompt)]
+        for i in range(len(self.call_logs)):
+            if self.call_logs[i].role == "user":
+                messages.extend([
+                    Message(
+                        role = "user",
+                        content = [
+                            MessageContent(
+                                type = "input_audio",
+                                input_audio = InputAudio(
+                                    data = self.call_logs[i].audio,
+                                    format = 'wav',
+                                )
                             )
-                        )
-                    ]
-                )
-            )
+                        ]
+                    ),
+                    Message(
+                        role = self.call_logs[i].role,
+                        content = f"TRANSCRIPTION (me, 911 dispatcher): {self.call_logs[i].transcription}"
+                    )
+                ])
+            else:
+                messages.append(Message(
+                    role = "user",
+                    content = f"TRANSCRIPTION (911 caller): {self.call_logs[i].transcription}"
+                ))
         
-        messages.append(Message(role = "user", content = output_questions))
-        if message_index == len(self.call_logs)-1:
-            messages.append(Message(role = "user", content = followup_questions))
-            # messages.append(Message(role = "user", content = guidelines))
-
+        messages.append(Message(role = "user", content = user_prompt))
+        print(len(messages))
         return self.llm.get_text_from_speech(messages = messages)
     

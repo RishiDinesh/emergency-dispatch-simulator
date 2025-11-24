@@ -1,8 +1,0 @@
-I am a 911 call operator and this is a transcript between me and a caller. 
-Describe the situation that the caller was in and the purpose for the call. 
-How well did I do at answering the call? 
-Did I deal with them in a proper tone and manner? 
-Did I ask the right questions? 
-Did I dispatch the correct service (if needed)? 
-Did I do all this in a timely manner? 
-Use the following as a guideline for judging me. 
