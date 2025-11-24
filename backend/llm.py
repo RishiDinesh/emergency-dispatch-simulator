@@ -60,7 +60,7 @@ class LLM(object):
             model = self.tts_model,
             temperature = 1.0,
             modalities=["audio"],
-            max_completion_tokens=4096,
+            max_completion_tokens=1950,
             top_p=0.95,
             stream=stream,
             stop=["<|eot_id|>", "<|end_of_text|>", "<|audio_eos|>"],
