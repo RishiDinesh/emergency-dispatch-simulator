@@ -1,6 +1,7 @@
 @implements IAsyncDisposable
 
 @inject IJSRuntime JS
+@inject ISnackbar Snackbar
 
 
 <MudTooltip Disabled="Recording" Text="Push to begin speaking" Placement="Placement.Top" Arrow>
@@ -55,7 +56,8 @@
             }
             catch (Exception e)
             {
-                
+                Snackbar.Add("There was an error loading the audio recorder...");
+                await Console.Error.WriteLineAsync(e.Message);
             }
         }
     }

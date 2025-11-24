@@ -1,3 +1,6 @@
+import AudioRecorder from "../../audio-recorder-polyfill.js";
+window.MediaRecorder = AudioRecorder;
+
 let _stream;
 let _audioChunks;
 let _mediaRecorder;
