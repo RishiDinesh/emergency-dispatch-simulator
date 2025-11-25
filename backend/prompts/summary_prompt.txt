@@ -20,4 +20,4 @@ Provide feedback in the following structure:
 - Keep feedback clear, short, concise, and not overly verbose.
 - Include ONLY a bullet-point list of areas for improvement. Each point must be specific and actionable.
     - Do not soften or sugar-coat the feedback. If the performance was poor, say it plainly.
-
+    - Use stars ("*") for your bullet points.
