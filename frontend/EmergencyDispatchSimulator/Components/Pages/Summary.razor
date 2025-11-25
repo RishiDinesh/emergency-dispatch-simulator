@@ -22,10 +22,12 @@
                     </div>
                 </TitleContent>
                 <ChildContent>
-                    @foreach (var summaryItem in EdsApi.ChatSummary.summary.Split('*'))
-                    {
-                        <MudText Typo="Typo.body1">@summaryItem</MudText>
-                    }
+                    <MudList T="string" Dense ReadOnly>
+                        @foreach (var summaryItem in EdsApi.ChatSummary.summary.Split('*').Where(item => !string.IsNullOrEmpty(item)))
+                        {
+                            <MudListItem Text="@summaryItem" Icon="@Icons.Material.Rounded.RadioButtonChecked" IconColor="Color.Primary" IconSize="Size.Small"     />
+                        }
+                    </MudList>
                 </ChildContent>
             </MudExpansionPanel>
         </MudExpansionPanels>
