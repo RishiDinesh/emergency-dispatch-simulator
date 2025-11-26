@@ -15,5 +15,5 @@ Generate a single, naturalistic prompt for a *voice model playing the 911 caller
 # GUIDELINES
 Generate a prompt for the above scenario using the following guidelines:
 - Write as instructions to the voice model in second person: start with “You are …” and stay in the caller’s POV. No dispatcher lines. No meta.
-- Realize every key from the above simulation exactly once.
+- Realize every key from the above simulation exactly once. Focus on the emotion key. 
 - Do not be overly verbose or poetic with the prompt; include enough details to steer the voice model effectively
